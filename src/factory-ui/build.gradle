@@ -1,0 +1,3 @@
+apply plugin: 'application'
+
+mainClassName = 'ws15.sbc.factory.ui.Main'
