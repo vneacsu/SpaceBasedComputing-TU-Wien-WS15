@@ -22,3 +22,9 @@ configure(subprojects - project(':dto')) {
         compile project(':dto')
     }
 }
+
+configure(subprojects - project(':common') - project(':dto')) {
+    dependencies {
+        compile project(':common')
+    }
+}
