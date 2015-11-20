@@ -1,2 +1,15 @@
 rootProject.name = 'sbc-ws15'
 
+include 'dto'
+include 'factory-ui'
+include 'supply-robot'
+include 'assembly-robot'
+include 'calibrate-robot'
+include 'logistics-robot'
+
+project(':dto').projectDir = file('src/dto')
+project(':factory-ui').projectDir = file('src/factory-ui')
+project(':supply-robot').projectDir = file('src/supply-robot')
+project(':assembly-robot').projectDir = file('src/assembly-robot')
+project(':calibrate-robot').projectDir = file('src/calibrate-robot')
+project(':logistics-robot').projectDir = file('src/logistics-robot')
