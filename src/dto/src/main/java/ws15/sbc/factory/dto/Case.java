@@ -1,17 +1,9 @@
 package ws15.sbc.factory.dto;
 
-import java.io.Serializable;
-import java.util.UUID;
+public class Case extends Component {
 
-public class Case implements Serializable {
-
-    private final String id;
-
-    public Case() {
-        id = UUID.randomUUID().toString();
+    public String toString() {
+        return String.format("case: %s", getId());
     }
 
-    public String getId() {
-        return id;
-    }
 }

@@ -1,17 +1,9 @@
 package ws15.sbc.factory.dto;
 
-import java.io.Serializable;
-import java.util.UUID;
+public class ControlUnit extends Component {
 
-public class ControlUnit implements Serializable {
-
-    private final String id;
-
-    public ControlUnit() {
-        id = UUID.randomUUID().toString();
+    public String toString() {
+        return String.format("controlUnit: %s", getId());
     }
 
-    public String getId() {
-        return id;
-    }
 }

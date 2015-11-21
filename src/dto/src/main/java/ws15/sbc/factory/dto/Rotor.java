@@ -1,17 +1,9 @@
 package ws15.sbc.factory.dto;
 
-import java.io.Serializable;
-import java.util.UUID;
+public class Rotor extends Component {
 
-public class Rotor implements Serializable {
-
-    private final String id;
-
-    public Rotor() {
-        id = UUID.randomUUID().toString();
+    public String toString() {
+        return String.format("rotor: %s", getId());
     }
 
-    public String getId() {
-        return id;
-    }
 }

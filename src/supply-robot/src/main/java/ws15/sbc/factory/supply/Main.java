@@ -1,27 +1,57 @@
 package ws15.sbc.factory.supply;
 
-import org.mozartspaces.core.*;
-import ws15.sbc.factory.common.ContainerUtil;
-import ws15.sbc.factory.dto.Case;
+import ws15.sbc.factory.dto.factory.*;
+import ws15.sbc.factory.supply.repository.ComponentRepository;
+import ws15.sbc.factory.supply.repository.SpaceBasedComponentRepository;
+import ws15.sbc.factory.supply.repository.XBasedComponentRepository;
 
-import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class Main {
 
-    public static void main(String[] argv) throws MzsCoreException, InterruptedException {
-        MzsCore core = DefaultMzsCore.newInstance();
-        Capi capi = new Capi(core);
-        ContainerReference cref = ContainerUtil.getOrCreateNamedContainer(URI.create("xvsm://localhost:4242"), "components", capi);
+    private final static ComponentRepository repoSpaceBased = new SpaceBasedComponentRepository();
+    private final static ComponentRepository repoXBased = new XBasedComponentRepository();
+    private final static Map<String, ComponentRepository> repoStrategyMap;
 
-        Case c = new Case();
+    private final static ComponentFactory caseFactory = new CaseFactory();
+    private final static ComponentFactory controlUnitFactory = new ControlUnitFactory();
+    private final static ComponentFactory engineFactory = new EngineFactory();
+    private final static ComponentFactory rotorFactory = new RotorFactory();
+    private final static Map<String, ComponentFactory> componentFactoryMap;
 
-        //noinspection InfiniteLoopStatement
-        for (;;) {
-            capi.write(new Entry(c), cref);
+    static {
+        repoStrategyMap = new HashMap<>();
+        repoStrategyMap.put("spaceBased", repoSpaceBased);
+        repoStrategyMap.put("xBased", repoXBased);
 
-            System.out.println("Entry written");
-            Thread.sleep(2000);
+        componentFactoryMap = new HashMap<>();
+        componentFactoryMap.put("case", caseFactory);
+        componentFactoryMap.put("controlUnit", controlUnitFactory);
+        componentFactoryMap.put("engine", engineFactory);
+        componentFactoryMap.put("rotor", rotorFactory);
+    }
+
+    public static void main(String[] argv) {
+        Optional<String> repoStrategy = getProperty("repoStrategy");
+        ComponentRepository componentRepository = repoStrategyMap.get(repoStrategy.orElse("spaceBased"));
+
+        Optional<String> componentType = getProperty("componentType");
+        ComponentFactory componentFactory = componentFactoryMap.get(componentType.orElseThrow(() -> new IllegalArgumentException("No component type specified")));
+
+        Integer quantity = Integer.parseInt(getProperty("quantity").orElseThrow(() -> new IllegalArgumentException("No quantity specified")));
+        Long interval = Long.parseLong(getProperty("interval").orElseThrow(() -> new IllegalArgumentException("No interval specified")));
+
+        new SupplyRobot(componentRepository, componentFactory, quantity, interval).run();
+    }
+
+    private static Optional<String> getProperty(String s) {
+        final String value = System.getProperty(s);
+        if (value != null) {
+            return Optional.of(value);
+        } else {
+            return Optional.empty();
         }
-
     }
 }
