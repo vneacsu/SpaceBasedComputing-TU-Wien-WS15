@@ -1,4 +1,4 @@
-package ws15.sbc.factory.supply.repository;
+package ws15.sbc.factory.common.repository;
 
 import java.io.Serializable;
 

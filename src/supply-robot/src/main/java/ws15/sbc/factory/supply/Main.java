@@ -1,9 +1,9 @@
 package ws15.sbc.factory.supply;
 
+import ws15.sbc.factory.common.repository.ComponentRepository;
+import ws15.sbc.factory.common.repository.SpaceBasedComponentRepository;
+import ws15.sbc.factory.common.repository.XBasedComponentRepository;
 import ws15.sbc.factory.dto.factory.*;
-import ws15.sbc.factory.supply.repository.ComponentRepository;
-import ws15.sbc.factory.supply.repository.SpaceBasedComponentRepository;
-import ws15.sbc.factory.supply.repository.XBasedComponentRepository;
 
 import java.util.HashMap;
 import java.util.Map;

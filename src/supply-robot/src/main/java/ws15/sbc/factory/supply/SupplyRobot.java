@@ -2,10 +2,10 @@ package ws15.sbc.factory.supply;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.repository.ComponentRepository;
+import ws15.sbc.factory.common.repository.SpaceBasedComponentRepository;
 import ws15.sbc.factory.dto.Component;
 import ws15.sbc.factory.dto.factory.ComponentFactory;
-import ws15.sbc.factory.supply.repository.ComponentRepository;
-import ws15.sbc.factory.supply.repository.SpaceBasedComponentRepository;
 
 import java.util.UUID;
 
