@@ -1,31 +1,30 @@
 package ws15.sbc.factory.ui;
 
-import org.mozartspaces.core.*;
-import org.mozartspaces.notifications.NotificationListener;
-import org.mozartspaces.notifications.NotificationManager;
-import org.mozartspaces.notifications.Operation;
-import ws15.sbc.factory.common.ContainerUtil;
-import ws15.sbc.factory.dto.Case;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import org.mozartspaces.core.MzsCoreException;
 
-import java.net.URI;
+import java.io.IOException;
 
-public class Main {
+public class Main extends Application {
 
-    private static final URI space = URI.create("xvsm://localhost:4242");
+    @Override
+    public void start(Stage stage) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+        Parent root = fxmlLoader.load();
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+
+        stage.setTitle("Drone factory");
+        stage.sizeToScene();
+        stage.show();
+    }
 
     public static void main(String[] argv) throws MzsCoreException, InterruptedException {
-
-        MzsCore core = DefaultMzsCore.newInstance();
-        Capi capi = new Capi(core);
-        ContainerReference cref = ContainerUtil.getOrCreateNamedContainer(space, "components", capi);
-
-        NotificationManager notifManager = new NotificationManager(core);
-
-        NotificationListener notifListener = (source, operation, entries) -> {
-            Entry entry = (Entry) CapiUtil.getSingleEntry(entries);
-            Case caseEntry = (Case) entry.getValue();
-        };
-        notifManager.createNotification(cref, notifListener, Operation.WRITE);
-
+        launch(argv);
     }
 }
