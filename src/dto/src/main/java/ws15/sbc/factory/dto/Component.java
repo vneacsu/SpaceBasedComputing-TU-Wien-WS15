@@ -15,4 +15,10 @@ public abstract class Component implements Serializable {
         return id;
     }
 
+    @Override
+    public String toString() {
+        return "Component{" +
+                "id='" + id + '\'' +
+                '}';
+    }
 }

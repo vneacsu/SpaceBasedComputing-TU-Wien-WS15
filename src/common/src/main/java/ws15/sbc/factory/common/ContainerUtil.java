@@ -1,7 +1,7 @@
 package ws15.sbc.factory.common;
 
 import org.mozartspaces.capi3.Coordinator;
-import org.mozartspaces.capi3.FifoCoordinator;
+import org.mozartspaces.capi3.TypeCoordinator;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.ContainerReference;
 import org.mozartspaces.core.MzsConstants;
@@ -31,11 +31,18 @@ public class ContainerUtil {
             log.debug("Container not found, creating it ...");
             // Create the Container
             ArrayList<Coordinator> obligatoryCoords = new ArrayList<>();
-            obligatoryCoords.add(new FifoCoordinator());
+            obligatoryCoords.add(new TypeCoordinator());
             cref = capi.createContainer(containerName, space, MzsConstants.Container.UNBOUNDED, obligatoryCoords, null, null);
             log.debug("Container created");
         }
         return cref;
     }
 
+    public static ContainerReference getOrCreateComponentsContainer(final URI space, final Capi capi) {
+        try {
+            return getOrCreateNamedContainer(space, "components", capi);
+        } catch (MzsCoreException e) {
+            throw new RuntimeException("Cannot get or create components container", e);
+        }
+    }
 }
