@@ -5,10 +5,12 @@ import org.mozartspaces.capi3.FifoCoordinator;
 import org.mozartspaces.core.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.dto.Component;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SpaceBasedComponentRepository implements ComponentRepository {
 
@@ -40,6 +42,11 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
             LOG.error("Could not write to container");
             throw new IllegalStateException("Could not connect to container", e);
         }
+    }
+
+    @Override
+    public List<Component> readAll() {
+        return null; // TODO
     }
 
     @Override
