@@ -7,6 +7,7 @@ include 'assembly-robot'
 include 'calibrate-robot'
 include 'logistics-robot'
 include 'common'
+include 'server'
 
 project(':dto').projectDir = file('src/dto')
 project(':factory-ui').projectDir = file('src/factory-ui')
@@ -15,3 +16,4 @@ project(':assembly-robot').projectDir = file('src/assembly-robot')
 project(':calibrate-robot').projectDir = file('src/calibrate-robot')
 project(':logistics-robot').projectDir = file('src/logistics-robot')
 project(':common').projectDir = file('src/common')
+project(':server').projectDir = file('src/server')

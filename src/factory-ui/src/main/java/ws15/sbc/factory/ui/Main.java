@@ -1,13 +1,19 @@
 package ws15.sbc.factory.ui;
 
-import org.mozartspaces.capi3.FifoCoordinator;
 import org.mozartspaces.core.*;
+import org.mozartspaces.notifications.NotificationListener;
+import org.mozartspaces.notifications.NotificationManager;
+import org.mozartspaces.notifications.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.ContainerUtil;
+import ws15.sbc.factory.dto.Case;
 
 import java.net.URI;
-import java.util.ArrayList;
 
 public class Main {
+
+    final static Logger LOG = LoggerFactory.getLogger(Main.class);
 
     private static final URI space = URI.create("xvsm://localhost:4242");
 
@@ -17,19 +23,14 @@ public class Main {
         Capi capi = new Capi(core);
         ContainerReference cref = ContainerUtil.getOrCreateNamedContainer(space, "components", capi);
 
-        //noinspection InfiniteLoopStatement
-        for (;;) {
-            TransactionReference tx = capi.createTransaction(10000, URI.create("xvsm://localhost:4242"));
-            ArrayList<String> entries = capi.take(cref, FifoCoordinator.newSelector(), MzsConstants.RequestTimeout.INFINITE, tx);
+        NotificationManager notifManager = new NotificationManager(core);
 
-            String message = entries.get(0);
-
-            // output
-            System.out.println(message);
-
-            capi.commitTransaction(tx);
-            Thread.sleep(1000);
-        }
+        NotificationListener notifListener = (source, operation, entries) -> {
+            Entry entry = (Entry) CapiUtil.getSingleEntry(entries);
+            Case caseEntry = (Case) entry.getValue();
+            LOG.info("Got entry with id: {}", caseEntry.getId());
+        };
+        notifManager.createNotification(cref, notifListener, Operation.WRITE);
 
     }
 }

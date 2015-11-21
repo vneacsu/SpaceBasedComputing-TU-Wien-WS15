@@ -19,6 +19,7 @@ configure(subprojects - project(':dto')) {
 
     dependencies {
         compile "org.mozartspaces:mozartspaces-runtime:$mozartspacesVersion"
+        compile "org.mozartspaces:mozartspaces-notifications:$mozartspacesVersion"
         compile project(':dto')
     }
 }
