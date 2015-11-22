@@ -2,6 +2,7 @@ package ws15.sbc.factory.common.repository;
 
 import org.mozartspaces.capi3.Coordinator;
 import org.mozartspaces.capi3.FifoCoordinator;
+import org.mozartspaces.capi3.TypeCoordinator;
 import org.mozartspaces.core.*;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
@@ -12,32 +13,62 @@ import ws15.sbc.factory.dto.Component;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.mozartspaces.core.MzsConstants.*;
 
 public class SpaceBasedComponentRepository implements ComponentRepository {
 
     final static Logger LOG = LoggerFactory.getLogger(SpaceBasedComponentRepository.class);
 
-    private static final URI space = URI.create("xvsm://localhost:4242");
+    private static final URI SPACE = URI.create("xvsm://localhost:4242");
+    private static final String CONTAINER_NAME = "components";
 
     private MzsCore core;
     private Capi capi;
     private ContainerReference cref;
 
+    private ThreadLocal<TransactionReference> currentTransaction = new ThreadLocal<>();
+
     public SpaceBasedComponentRepository() {
         core = DefaultMzsCore.newInstance();
         capi = new Capi(core);
-        try {
-            cref = getOrCreateNamedContainer(space, "components", capi);
-        } catch (MzsCoreException e) {
-            throw new IllegalStateException("Could not connect to container", e);
-        }
+        cref = getOrCreateComponentContainer();
+    }
 
+    private ContainerReference getOrCreateComponentContainer() {
+        return getComponentContainer().orElseGet(this::createComponentContainer);
+    }
+
+    private Optional<ContainerReference> getComponentContainer() {
+        LOG.info("Lookup component container");
+
+        try {
+            ContainerReference cref = capi.lookupContainer(CONTAINER_NAME, SPACE, RequestTimeout.DEFAULT, null);
+
+            LOG.info("Components container found");
+
+            return Optional.of(cref);
+        } catch (MzsCoreException e) {
+            LOG.info("Components container not found");
+            return Optional.empty();
+        }
+    }
+
+    private ContainerReference createComponentContainer() {
+        LOG.info("Creating components container");
+
+        List<Coordinator> coordinators = asList(new FifoCoordinator(), new TypeCoordinator());
+
+        try {
+            return capi.createContainer(CONTAINER_NAME, SPACE, Container.UNBOUNDED, coordinators, null, null);
+        } catch (MzsCoreException e) {
+            throw new RuntimeException("Failed to create components container", e);
+        }
     }
 
     @Override
@@ -53,7 +84,7 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
     public List<Component> readAll() {
         try {
             // TODO use transactions to block the container
-            List<FifoCoordinator.FifoSelector> selectors = Collections.singletonList(FifoCoordinator.newSelector(Selecting.COUNT_ALL));
+            List<FifoCoordinator.FifoSelector> selectors = singletonList(FifoCoordinator.newSelector(Selecting.COUNT_ALL));
             return capi.read(this.cref, selectors, RequestTimeout.TRY_ONCE, null);
         } catch (MzsCoreException e) {
             throw new IllegalStateException("Could not read from container", e);
@@ -82,26 +113,36 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
         core.shutdown(false);
     }
 
-    private ContainerReference getOrCreateNamedContainer(final URI space,
-                                                               final String containerName,
-                                                               final Capi capi) throws MzsCoreException {
-
-        ContainerReference cref;
+    @Override
+    public void beginTransaction() {
         try {
-            // Get the Container
-            LOG.info("Lookup container");
-            cref = capi.lookupContainer(containerName, space, RequestTimeout.DEFAULT, null);
-            LOG.info("Container found");
-            // If it is unknown, create it
+            TransactionReference tref = capi.createTransaction(RequestTimeout.DEFAULT, SPACE);
+
+            currentTransaction.set(tref);
         } catch (MzsCoreException e) {
-            LOG.info("Container not found, creating it ...");
-            // Create the Container
-            ArrayList<Coordinator> obligatoryCoords = new ArrayList<>();
-            obligatoryCoords.add(new FifoCoordinator());
-            cref = capi.createContainer(containerName, space, Container.UNBOUNDED, obligatoryCoords, null, null);
-            LOG.info("Container created");
+            throw new RuntimeException(e);
         }
-        return cref;
     }
 
+    @Override
+    public void commit() {
+        try {
+            capi.commitTransaction(currentTransaction.get());
+
+            currentTransaction.set(null);
+        } catch (MzsCoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void rollback() {
+        try {
+            capi.rollbackTransaction(currentTransaction.get());
+
+            currentTransaction.set(null);
+        } catch (MzsCoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
