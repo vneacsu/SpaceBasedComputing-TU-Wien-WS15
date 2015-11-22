@@ -10,6 +10,9 @@ subprojects {
     dependencies {
         compile "org.slf4j:slf4j-api:$slf4jVersion"
 
+        compile 'javax.inject:javax.inject:1'
+        compile "com.google.inject:guice:$guiceVersion"
+
         testCompile 'junit:junit:4.12'
         testCompile 'org.mockito:mockito-all:1.10.19'
     }

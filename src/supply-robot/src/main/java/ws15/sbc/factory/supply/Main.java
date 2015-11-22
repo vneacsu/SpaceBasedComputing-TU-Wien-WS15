@@ -1,7 +1,9 @@
 package ws15.sbc.factory.supply;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import ws15.sbc.factory.common.CommonModule;
 import ws15.sbc.factory.common.repository.ComponentRepository;
-import ws15.sbc.factory.common.repository.ComponentRepositoryProducer;
 import ws15.sbc.factory.dto.factory.*;
 
 import java.util.HashMap;
@@ -25,7 +27,9 @@ public class Main {
     }
 
     public static void main(String[] argv) {
-        ComponentRepository componentRepository = ComponentRepositoryProducer.getSingleton();
+        Injector injector = Guice.createInjector(new CommonModule());
+
+        ComponentRepository componentRepository = injector.getInstance(ComponentRepository.class);
 
         Optional<String> componentType = getProperty("componentType");
         ComponentFactory componentFactory = componentFactoryMap.get(componentType.orElseThrow(() -> new IllegalArgumentException("No component type specified")));

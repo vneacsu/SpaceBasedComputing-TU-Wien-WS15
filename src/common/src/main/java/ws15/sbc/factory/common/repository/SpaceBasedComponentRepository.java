@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.dto.Component;
 
+import javax.inject.Singleton;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import static java.util.Collections.singletonList;
 import static org.mozartspaces.core.MzsConstants.*;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.ZERO;
 
+@Singleton
 public class SpaceBasedComponentRepository implements ComponentRepository {
 
     final static Logger LOG = LoggerFactory.getLogger(SpaceBasedComponentRepository.class);

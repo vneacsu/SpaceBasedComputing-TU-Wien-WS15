@@ -2,9 +2,11 @@ package ws15.sbc.factory.common.repository;
 
 import ws15.sbc.factory.dto.Component;
 
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.function.Consumer;
 
+@Singleton
 public class XBasedComponentRepository implements ComponentRepository {
 
     @Override

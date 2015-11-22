@@ -2,9 +2,11 @@ package ws15.sbc.factory.assembly;
 
 import ws15.sbc.factory.dto.EngineRotorPair;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class AssemblyRobotLocalStorage {
 
     private final List<EngineRotorPair> availableEngineRotorPairs = new ArrayList<>();

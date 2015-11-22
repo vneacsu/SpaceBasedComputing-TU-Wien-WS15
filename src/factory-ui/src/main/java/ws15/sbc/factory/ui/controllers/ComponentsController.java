@@ -6,22 +6,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import ws15.sbc.factory.common.repository.ComponentRepository;
-import ws15.sbc.factory.common.repository.ComponentRepositoryProducer;
 import ws15.sbc.factory.dto.Component;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class ComponentsController implements Initializable {
 
-    private final ComponentRepository componentRepository;
+    @Inject
+    private ComponentRepository componentRepository;
 
     @FXML private ListView<Component> listView;
-
-    public ComponentsController() {
-        componentRepository = ComponentRepositoryProducer.getSingleton();
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
