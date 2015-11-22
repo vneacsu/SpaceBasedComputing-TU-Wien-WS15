@@ -1,5 +1,7 @@
-package ws15.sbc.factory.common.repository;
+package ws15.sbc.factory.common.repository.xbased;
 
+import ws15.sbc.factory.common.repository.ComponentRepository;
+import ws15.sbc.factory.common.repository.EntitySpecification;
 import ws15.sbc.factory.dto.Component;
 
 import javax.inject.Singleton;

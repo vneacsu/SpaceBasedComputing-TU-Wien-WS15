@@ -1,4 +1,4 @@
-package ws15.sbc.factory.common.repository;
+package ws15.sbc.factory.common.repository.mzs;
 
 import org.mozartspaces.capi3.*;
 import org.mozartspaces.core.*;
@@ -7,7 +7,8 @@ import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.repository.mzs.SpaceBasedTxManager;
+import ws15.sbc.factory.common.repository.ComponentRepository;
+import ws15.sbc.factory.common.repository.EntitySpecification;
 import ws15.sbc.factory.dto.Component;
 
 import javax.inject.Inject;

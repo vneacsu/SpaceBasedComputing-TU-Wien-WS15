@@ -8,10 +8,10 @@ import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.app.impl.SpaceBasedAppManager;
 import ws15.sbc.factory.common.app.impl.XBasedAppManager;
 import ws15.sbc.factory.common.repository.ComponentRepository;
-import ws15.sbc.factory.common.repository.SpaceBasedComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
-import ws15.sbc.factory.common.repository.XBasedComponentRepository;
+import ws15.sbc.factory.common.repository.mzs.SpaceBasedComponentRepository;
 import ws15.sbc.factory.common.repository.mzs.SpaceBasedTxManager;
+import ws15.sbc.factory.common.repository.xbased.XBasedComponentRepository;
 import ws15.sbc.factory.common.repository.xbased.XBasedTxManager;
 import ws15.sbc.factory.common.utils.PropertyUtils;
 
