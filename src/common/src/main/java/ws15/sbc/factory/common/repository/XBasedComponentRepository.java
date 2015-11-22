@@ -15,7 +15,7 @@ public class XBasedComponentRepository implements ComponentRepository {
     }
 
     @Override
-    public <T extends Component> List<T> takeComponents(ComponentSpecification... componentSpecifications) {
+    public <T extends Component> List<T> takeComponents(EntitySpecification... entitySpecifications) {
         throw new UnsupportedOperationException();
     }
 

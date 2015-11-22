@@ -2,17 +2,5 @@ package ws15.sbc.factory.common.repository;
 
 import ws15.sbc.factory.dto.Component;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-public interface ComponentRepository {
-
-    void write(Component... components);
-
-    <T extends Component> List<T> takeComponents(ComponentSpecification... componentSpecifications);
-
-    List<Component> readAll();
-
-    void onComponent(Consumer<Component> consumer);
-
+public interface ComponentRepository extends Repository<Component> {
 }

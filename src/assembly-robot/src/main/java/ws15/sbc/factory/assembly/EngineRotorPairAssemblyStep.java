@@ -3,7 +3,7 @@ package ws15.sbc.factory.assembly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.repository.ComponentRepository;
-import ws15.sbc.factory.common.repository.ComponentSpecification;
+import ws15.sbc.factory.common.repository.EntitySpecification;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.dto.Component;
 import ws15.sbc.factory.dto.Engine;
@@ -75,7 +75,7 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
         log.info("Trying to acquire existent engine rotor pair...");
 
         List<EngineRotorPair> engineRotorPairs = componentRepository.takeComponents(
-                new ComponentSpecification(EngineRotorPair.class)
+                new EntitySpecification(EngineRotorPair.class)
         );
 
         return engineRotorPairs.isEmpty() ? Optional.empty() : Optional.of(engineRotorPairs.get(0));
@@ -85,8 +85,8 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
         log.info("Assembling new engine rotor pair...");
 
         List<Component> components = componentRepository.takeComponents(
-                new ComponentSpecification(Engine.class),
-                new ComponentSpecification(Rotor.class)
+                new EntitySpecification(Engine.class),
+                new EntitySpecification(Rotor.class)
         );
 
         if (components.isEmpty()) {

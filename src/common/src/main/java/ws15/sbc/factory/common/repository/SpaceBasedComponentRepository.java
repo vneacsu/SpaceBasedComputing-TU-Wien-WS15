@@ -36,12 +36,14 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
     private Capi capi;
     private ContainerReference cref;
 
-    @Inject
     private SpaceBasedTxManager txManager;
 
-    public SpaceBasedComponentRepository() {
-        core = DefaultMzsCore.newInstance();
-        capi = new Capi(core);
+    @Inject
+    public SpaceBasedComponentRepository(SpaceBasedTxManager txManager, MzsCore core, Capi capi) {
+        this.txManager = txManager;
+
+        this.core = core;
+        this.capi = capi;
         cref = getOrCreateComponentContainer();
     }
 
@@ -91,8 +93,8 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
     }
 
     @Override
-    public <T extends Component> List<T> takeComponents(ComponentSpecification... componentSpecifications) {
-        List<Selector> selectors = asList(componentSpecifications).stream()
+    public <T extends Component> List<T> takeComponents(EntitySpecification... entitySpecifications) {
+        List<Selector> selectors = asList(entitySpecifications).stream()
                 .map(spec -> TypeCoordinator.newSelector(spec.getClazz(), spec.getCount()))
                 .collect(Collectors.toList());
 
