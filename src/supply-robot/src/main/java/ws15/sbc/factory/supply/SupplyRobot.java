@@ -3,7 +3,7 @@ package ws15.sbc.factory.supply;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.common.repository.mzs.SpaceBasedRawRawComponentRepository;
+import ws15.sbc.factory.common.repository.mzs.SpaceBasedRawComponentRepository;
 import ws15.sbc.factory.dto.RawComponent;
 import ws15.sbc.factory.dto.factory.RawComponentFactory;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class SupplyRobot {
 
-    final static Logger LOG = LoggerFactory.getLogger(SpaceBasedRawRawComponentRepository.class);
+    final static Logger LOG = LoggerFactory.getLogger(SpaceBasedRawComponentRepository.class);
 
     private final String id;
     private final RawComponentRepository rawComponentRepository;

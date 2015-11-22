@@ -10,10 +10,10 @@ import javax.inject.Singleton;
 import java.net.URI;
 
 @Singleton
-public class SpaceBasedRawRawComponentRepository extends BaseSpaceBasedRepository<RawComponent> implements RawComponentRepository {
+public class SpaceBasedRawComponentRepository extends BaseSpaceBasedRepository<RawComponent> implements RawComponentRepository {
 
     @Inject
-    public SpaceBasedRawRawComponentRepository(SpaceBasedTxManager txManager, MzsCore core, Capi capi, URI space) {
+    public SpaceBasedRawComponentRepository(SpaceBasedTxManager txManager, MzsCore core, Capi capi, URI space) {
         super(txManager, core, capi, space);
     }
 
