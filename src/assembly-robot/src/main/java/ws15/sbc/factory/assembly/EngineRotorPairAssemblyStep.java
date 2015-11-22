@@ -13,9 +13,11 @@ import ws15.sbc.factory.dto.Rotor;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 
+@Singleton
 final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
     private static final Logger log = LoggerFactory.getLogger(EngineRotorPairAssemblyStep.class);
 
