@@ -135,6 +135,8 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
 
     @Override
     public void beginTransaction() {
+        LOG.info("Begin transaction for components repository");
+
         try {
             TransactionReference tref = capi.createTransaction(RequestTimeout.DEFAULT, SPACE);
 
@@ -146,6 +148,8 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
 
     @Override
     public void commit() {
+        LOG.info("Commit current transaction for components repository");
+
         try {
             capi.commitTransaction(currentTransaction.get());
 
@@ -157,6 +161,8 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
 
     @Override
     public void rollback() {
+        LOG.info("Rollback current transaction for components repository");
+
         try {
             capi.rollbackTransaction(currentTransaction.get());
 

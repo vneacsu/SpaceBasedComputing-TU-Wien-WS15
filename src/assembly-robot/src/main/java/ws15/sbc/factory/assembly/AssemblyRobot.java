@@ -53,9 +53,11 @@ public class AssemblyRobot {
             Optional<EngineRotorPair> engineRotorPair = acquireOrAssembleEngineRotorPair();
 
             if (!engineRotorPair.isPresent()) {
+                log.info("Engine rotor pair could have not been acquired/assembled");
                 storeEngineRotorPairsForFutureUse();
                 break;
             } else {
+                log.info("Engine rotor pair successfully acquired/assembled");
                 availableEngineRobotPairs.add(engineRotorPair.get());
             }
         }
@@ -65,12 +67,15 @@ public class AssemblyRobot {
         Optional<EngineRotorPair> engineRotorPair = acquireEngineRotorPair();
 
         if (!engineRotorPair.isPresent()) {
+            log.info("Existent engine rotor pair not found");
             engineRotorPair = assembleEngineRotorPair();
         }
         return engineRotorPair;
     }
 
     private Optional<EngineRotorPair> acquireEngineRotorPair() {
+        log.info("Trying to acquire existent engine rotor pair...");
+
         List<EngineRotorPair> engineRotorPairs = componentRepository.takeComponents(
                 new ComponentSpecification(EngineRotorPair.class)
         );
@@ -79,6 +84,8 @@ public class AssemblyRobot {
     }
 
     private Optional<EngineRotorPair> assembleEngineRotorPair() {
+        log.info("Assembling new engine rotor pair...");
+
         List<Component> components = componentRepository.takeComponents(
                 new ComponentSpecification(Engine.class),
                 new ComponentSpecification(Rotor.class)
@@ -89,6 +96,8 @@ public class AssemblyRobot {
     }
 
     private void storeEngineRotorPairsForFutureUse() {
+        log.info("Storing available engine rotor pairs for future use...");
+
         componentRepository.write(availableEngineRotorPairsArray());
 
         availableEngineRobotPairs.clear();
