@@ -2,6 +2,7 @@ package ws15.sbc.factory.assembly;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
 
@@ -17,8 +18,12 @@ public class AssemblyRobot {
     @Inject
     @Named("RobotId")
     private String robotId;
+
     @Inject
     private RawComponentRepository rawComponentRepository;
+
+    @Inject
+    private ProcessedComponentRepository processedComponentRepository;
 
     @Inject
     private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
@@ -39,6 +44,10 @@ public class AssemblyRobot {
 
     public AssemblyRobotLocalStorage getAssemblyRobotLocalStorage() {
         return assemblyRobotLocalStorage;
+    }
+
+    public ProcessedComponentRepository getProcessedComponentRepository() {
+        return processedComponentRepository;
     }
 
     public TxManager getTxManager() {

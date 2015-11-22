@@ -1,6 +1,6 @@
 package ws15.sbc.factory.dto;
 
-public class EngineRotorPair extends RawComponent {
+public class EngineRotorPair extends ProcessedComponent {
 
     private final String assembledBy;
     private final Engine engine;

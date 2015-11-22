@@ -3,6 +3,7 @@ package ws15.sbc.factory.assembly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.repository.EntitySpecification;
+import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.dto.Engine;
@@ -20,12 +21,14 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
 
     private final String robotId;
     private final RawComponentRepository rawComponentRepository;
+    private final ProcessedComponentRepository processedComponentRepository;
     private final AssemblyRobotLocalStorage assemblyRobotLocalStorage;
     private final TxManager txManager;
 
     public EngineRotorPairAssemblyStep(AssemblyRobot assemblyRobot) {
         this.robotId = assemblyRobot.getRobotId();
         this.rawComponentRepository = assemblyRobot.getRawComponentRepository();
+        this.processedComponentRepository = assemblyRobot.getProcessedComponentRepository();
         this.assemblyRobotLocalStorage = assemblyRobot.getAssemblyRobotLocalStorage();
         this.txManager = assemblyRobot.getTxManager();
     }
@@ -74,7 +77,7 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
     private Optional<EngineRotorPair> acquireEngineRotorPair() {
         log.info("Trying to acquire existent engine rotor pair...");
 
-        List<EngineRotorPair> engineRotorPairs = rawComponentRepository.takeComponents(
+        List<EngineRotorPair> engineRotorPairs = processedComponentRepository.takeComponents(
                 new EntitySpecification(EngineRotorPair.class)
         );
 
@@ -111,6 +114,6 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
         List<EngineRotorPair> availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
         EngineRotorPair[] engineRotorPairs = availableEngineRotorPairs.toArray(new EngineRotorPair[availableEngineRotorPairs.size()]);
 
-        rawComponentRepository.write(engineRotorPairs);
+        processedComponentRepository.write(engineRotorPairs);
     }
 }
