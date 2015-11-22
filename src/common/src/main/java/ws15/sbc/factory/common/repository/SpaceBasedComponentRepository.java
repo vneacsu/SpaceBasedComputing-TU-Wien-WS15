@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.dto.Component;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -73,16 +72,21 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
     }
 
     @Override
-    public void write(Serializable serializable) {
+    public void write(Component... components) {
+        Entry[] entries = asList(components).stream()
+                .map(Entry::new)
+                .collect(Collectors.toList())
+                .toArray(new Entry[components.length]);
+
         try {
-            capi.write(new Entry(serializable), cref);
+            capi.write(cref, ZERO, currentTransaction.get(), entries);
         } catch (MzsCoreException e) {
-            throw new IllegalStateException("Could not connect to container", e);
+            throw new RuntimeException(e);
         }
     }
 
     @Override
-    public <T extends Serializable> List<T> takeComponents(ComponentSpecification... componentSpecifications) {
+    public <T extends Component> List<T> takeComponents(ComponentSpecification... componentSpecifications) {
         List<Selector> selectors = asList(componentSpecifications).stream()
                 .map(spec -> TypeCoordinator.newSelector(spec.getClazz(), spec.getCount()))
                 .collect(Collectors.toList());

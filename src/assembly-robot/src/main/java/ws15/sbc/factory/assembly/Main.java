@@ -1,16 +1,18 @@
 package ws15.sbc.factory.assembly;
 
 import org.mozartspaces.core.MzsCoreException;
-
-import java.net.URI;
+import ws15.sbc.factory.common.repository.ComponentRepository;
+import ws15.sbc.factory.common.repository.ComponentRepositoryProducer;
 
 public class Main {
-
-    private static final URI SPACE = URI.create("xvsm://localhost:4242");
 
     public static void main(String[] argv) throws MzsCoreException {
         String id = "dummy";
 
-        new AssemblyRobot(id, SPACE).run();
+        ComponentRepository componentRepository = ComponentRepositoryProducer.getSingleton();
+
+        new AssemblyRobot(id, componentRepository).run();
+
+        componentRepository.close();
     }
 }
