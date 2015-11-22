@@ -2,14 +2,10 @@ package ws15.sbc.factory.assembly;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
-import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.common.repository.TxManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.List;
 
 @Singleton
 public class AssemblyRobot {
@@ -20,44 +16,12 @@ public class AssemblyRobot {
     private String robotId;
 
     @Inject
-    private RawComponentRepository rawComponentRepository;
-
-    @Inject
-    private ProcessedComponentRepository processedComponentRepository;
-
-    @Inject
-    private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
-
-    @Inject
-    private TxManager txManager;
-
-    @Inject
-    private List<AssemblyRobotStep> steps;
-
-    public String getRobotId() {
-        return robotId;
-    }
-
-    public RawComponentRepository getRawComponentRepository() {
-        return rawComponentRepository;
-    }
-
-    public AssemblyRobotLocalStorage getAssemblyRobotLocalStorage() {
-        return assemblyRobotLocalStorage;
-    }
-
-    public ProcessedComponentRepository getProcessedComponentRepository() {
-        return processedComponentRepository;
-    }
-
-    public TxManager getTxManager() {
-        return txManager;
-    }
+    private EngineRotorPairAssemblyStep engineRotorPairAssemblyStep;
 
     public void run() {
         log.info("Starting assembly robot <{}> started work", robotId);
 
-        steps.forEach(AssemblyRobotStep::performStep);
+        engineRotorPairAssemblyStep.performStep();
 
         log.info("Assembly robot <{}> finished work", robotId);
     }

@@ -11,6 +11,8 @@ import ws15.sbc.factory.dto.EngineRotorPair;
 import ws15.sbc.factory.dto.RawComponent;
 import ws15.sbc.factory.dto.Rotor;
 
+import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,19 +21,17 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
 
     private static final int N_ENGINE_ROTOR_PAIRS = 3;
 
-    private final String robotId;
-    private final RawComponentRepository rawComponentRepository;
-    private final ProcessedComponentRepository processedComponentRepository;
-    private final AssemblyRobotLocalStorage assemblyRobotLocalStorage;
-    private final TxManager txManager;
-
-    public EngineRotorPairAssemblyStep(AssemblyRobot assemblyRobot) {
-        this.robotId = assemblyRobot.getRobotId();
-        this.rawComponentRepository = assemblyRobot.getRawComponentRepository();
-        this.processedComponentRepository = assemblyRobot.getProcessedComponentRepository();
-        this.assemblyRobotLocalStorage = assemblyRobot.getAssemblyRobotLocalStorage();
-        this.txManager = assemblyRobot.getTxManager();
-    }
+    @Inject
+    @Named("RobotId")
+    private String robotId;
+    @Inject
+    private RawComponentRepository rawComponentRepository;
+    @Inject
+    private ProcessedComponentRepository processedComponentRepository;
+    @Inject
+    private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
+    @Inject
+    private TxManager txManager;
 
     @Override
     public void performStep() {
