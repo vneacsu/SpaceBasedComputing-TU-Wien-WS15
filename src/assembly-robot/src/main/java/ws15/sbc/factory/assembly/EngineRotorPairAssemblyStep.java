@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.repository.ComponentRepository;
 import ws15.sbc.factory.common.repository.ComponentSpecification;
+import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.dto.Component;
 import ws15.sbc.factory.dto.Engine;
 import ws15.sbc.factory.dto.EngineRotorPair;
@@ -20,27 +21,29 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
     private final String robotId;
     private final ComponentRepository componentRepository;
     private final AssemblyRobotLocalStorage assemblyRobotLocalStorage;
+    private final TxManager txManager;
 
     public EngineRotorPairAssemblyStep(AssemblyRobot assemblyRobot) {
         this.robotId = assemblyRobot.getRobotId();
         this.componentRepository = assemblyRobot.getComponentRepository();
         this.assemblyRobotLocalStorage = assemblyRobot.getAssemblyRobotLocalStorage();
+        this.txManager = assemblyRobot.getTxManager();
     }
 
     @Override
     public void performStep() {
         log.info("Performing engine rotor pair assembly step");
 
-        componentRepository.beginTransaction();
+        txManager.beginTransaction();
 
         try {
             acquireOrAssembleEngineRotorPairs();
         } catch (Exception e) {
-            componentRepository.rollback();
+            txManager.rollback();
             throw e;
         }
 
-        componentRepository.commit();
+        txManager.commit();
     }
 
     private void acquireOrAssembleEngineRotorPairs() {

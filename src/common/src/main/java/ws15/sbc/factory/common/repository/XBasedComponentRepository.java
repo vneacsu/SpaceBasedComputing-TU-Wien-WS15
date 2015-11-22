@@ -28,19 +28,4 @@ public class XBasedComponentRepository implements ComponentRepository {
     public void onComponent(Consumer<Component> consumer) {
         throw new UnsupportedOperationException(); // follows later
     }
-
-    @Override
-    public void beginTransaction() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void commit() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void rollback() {
-        throw new UnsupportedOperationException();
-    }
 }

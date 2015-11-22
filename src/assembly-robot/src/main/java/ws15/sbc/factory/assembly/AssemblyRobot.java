@@ -3,6 +3,7 @@ package ws15.sbc.factory.assembly;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.repository.ComponentRepository;
+import ws15.sbc.factory.common.repository.TxManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -23,6 +24,9 @@ public class AssemblyRobot {
     private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
 
     @Inject
+    private TxManager txManager;
+
+    @Inject
     private List<AssemblyRobotStep> steps;
 
     public String getRobotId() {
@@ -35,6 +39,10 @@ public class AssemblyRobot {
 
     public AssemblyRobotLocalStorage getAssemblyRobotLocalStorage() {
         return assemblyRobotLocalStorage;
+    }
+
+    public TxManager getTxManager() {
+        return txManager;
     }
 
     public void run() {

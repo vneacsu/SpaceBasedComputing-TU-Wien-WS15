@@ -5,7 +5,7 @@ import ws15.sbc.factory.dto.Component;
 import java.util.List;
 import java.util.function.Consumer;
 
-public interface ComponentRepository extends TransactionAware {
+public interface ComponentRepository {
 
     void write(Component... components);
 

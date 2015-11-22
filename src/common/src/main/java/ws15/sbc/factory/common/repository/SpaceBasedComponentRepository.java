@@ -7,8 +7,10 @@ import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.repository.mzs.SpaceBasedTxManager;
 import ws15.sbc.factory.dto.Component;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.net.URI;
 import java.util.List;
@@ -34,7 +36,8 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
     private Capi capi;
     private ContainerReference cref;
 
-    private ThreadLocal<TransactionReference> currentTransaction = new ThreadLocal<>();
+    @Inject
+    private SpaceBasedTxManager txManager;
 
     public SpaceBasedComponentRepository() {
         core = DefaultMzsCore.newInstance();
@@ -81,7 +84,7 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
                 .toArray(new Entry[components.length]);
 
         try {
-            capi.write(cref, ZERO, currentTransaction.get(), entries);
+            capi.write(cref, ZERO, txManager.currentTransaction(), entries);
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }
@@ -94,7 +97,7 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
                 .collect(Collectors.toList());
 
         try {
-            return capi.take(cref, selectors, ZERO, currentTransaction.get());
+            return capi.take(cref, selectors, ZERO, txManager.currentTransaction());
         } catch (CountNotMetException e) {
             return emptyList();
         } catch (MzsCoreException e) {
@@ -127,45 +130,6 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
             notifManager.createNotification(cref, notifListener, Operation.WRITE);
         } catch (MzsCoreException | InterruptedException e) {
             throw new IllegalStateException("Could not set onWrite notification", e);
-        }
-    }
-
-    @Override
-    public void beginTransaction() {
-        LOG.info("Begin transaction for components repository");
-
-        try {
-            TransactionReference tref = capi.createTransaction(RequestTimeout.DEFAULT, SPACE);
-
-            currentTransaction.set(tref);
-        } catch (MzsCoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void commit() {
-        LOG.info("Commit current transaction for components repository");
-
-        try {
-            capi.commitTransaction(currentTransaction.get());
-
-            currentTransaction.set(null);
-        } catch (MzsCoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void rollback() {
-        LOG.info("Rollback current transaction for components repository");
-
-        try {
-            capi.rollbackTransaction(currentTransaction.get());
-
-            currentTransaction.set(null);
-        } catch (MzsCoreException e) {
-            throw new RuntimeException(e);
         }
     }
 }
