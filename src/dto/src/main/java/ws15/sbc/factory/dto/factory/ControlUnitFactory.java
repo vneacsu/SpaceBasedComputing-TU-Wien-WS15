@@ -1,12 +1,12 @@
 package ws15.sbc.factory.dto.factory;
 
-import ws15.sbc.factory.dto.Component;
 import ws15.sbc.factory.dto.ControlUnit;
+import ws15.sbc.factory.dto.RawComponent;
 
-public class ControlUnitFactory implements ComponentFactory {
+public class ControlUnitFactory implements RawComponentFactory {
 
     @Override
-    public Component produceComponent() {
+    public RawComponent produceRawComponent() {
         return new ControlUnit();
     }
 

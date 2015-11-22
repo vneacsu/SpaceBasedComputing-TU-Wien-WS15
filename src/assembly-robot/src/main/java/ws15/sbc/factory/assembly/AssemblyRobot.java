@@ -2,7 +2,7 @@ package ws15.sbc.factory.assembly;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.repository.ComponentRepository;
+import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
 
 import javax.inject.Inject;
@@ -18,7 +18,7 @@ public class AssemblyRobot {
     @Named("RobotId")
     private String robotId;
     @Inject
-    private ComponentRepository componentRepository;
+    private RawComponentRepository rawComponentRepository;
 
     @Inject
     private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
@@ -33,8 +33,8 @@ public class AssemblyRobot {
         return robotId;
     }
 
-    public ComponentRepository getComponentRepository() {
-        return componentRepository;
+    public RawComponentRepository getRawComponentRepository() {
+        return rawComponentRepository;
     }
 
     public AssemblyRobotLocalStorage getAssemblyRobotLocalStorage() {

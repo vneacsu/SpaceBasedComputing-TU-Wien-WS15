@@ -1,12 +1,12 @@
 package ws15.sbc.factory.dto.factory;
 
-import ws15.sbc.factory.dto.Component;
+import ws15.sbc.factory.dto.RawComponent;
 import ws15.sbc.factory.dto.Rotor;
 
-public class RotorFactory implements ComponentFactory {
+public class RotorFactory implements RawComponentFactory {
 
     @Override
-    public Component produceComponent() {
+    public RawComponent produceRawComponent() {
         return new Rotor();
     }
 

@@ -1,33 +1,33 @@
 package ws15.sbc.factory.common.repository.xbased;
 
-import ws15.sbc.factory.common.repository.ComponentRepository;
 import ws15.sbc.factory.common.repository.EntitySpecification;
-import ws15.sbc.factory.dto.Component;
+import ws15.sbc.factory.common.repository.RawComponentRepository;
+import ws15.sbc.factory.dto.RawComponent;
 
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.function.Consumer;
 
 @Singleton
-public class XBasedComponentRepository implements ComponentRepository {
+public class XBasedRawComponentRepository implements RawComponentRepository {
 
     @Override
-    public void write(Component... components) {
+    public void write(RawComponent... components) {
         throw new UnsupportedOperationException(); // follows later
     }
 
     @Override
-    public <T extends Component> List<T> takeComponents(EntitySpecification... entitySpecifications) {
+    public <T extends RawComponent> List<T> takeComponents(EntitySpecification... entitySpecifications) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Component> readAll() {
+    public List<RawComponent> readAll() {
         throw new UnsupportedOperationException(); // follows later
     }
 
     @Override
-    public void onComponent(Consumer<Component> consumer) {
+    public void onComponent(Consumer<RawComponent> consumer) {
         throw new UnsupportedOperationException(); // follows later
     }
 }

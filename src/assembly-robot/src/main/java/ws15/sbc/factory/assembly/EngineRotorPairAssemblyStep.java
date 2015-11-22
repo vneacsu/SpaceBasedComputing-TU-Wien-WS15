@@ -2,12 +2,12 @@ package ws15.sbc.factory.assembly;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.repository.ComponentRepository;
 import ws15.sbc.factory.common.repository.EntitySpecification;
+import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
-import ws15.sbc.factory.dto.Component;
 import ws15.sbc.factory.dto.Engine;
 import ws15.sbc.factory.dto.EngineRotorPair;
+import ws15.sbc.factory.dto.RawComponent;
 import ws15.sbc.factory.dto.Rotor;
 
 import java.util.List;
@@ -19,13 +19,13 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
     private static final int N_ENGINE_ROTOR_PAIRS = 3;
 
     private final String robotId;
-    private final ComponentRepository componentRepository;
+    private final RawComponentRepository rawComponentRepository;
     private final AssemblyRobotLocalStorage assemblyRobotLocalStorage;
     private final TxManager txManager;
 
     public EngineRotorPairAssemblyStep(AssemblyRobot assemblyRobot) {
         this.robotId = assemblyRobot.getRobotId();
-        this.componentRepository = assemblyRobot.getComponentRepository();
+        this.rawComponentRepository = assemblyRobot.getRawComponentRepository();
         this.assemblyRobotLocalStorage = assemblyRobot.getAssemblyRobotLocalStorage();
         this.txManager = assemblyRobot.getTxManager();
     }
@@ -74,7 +74,7 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
     private Optional<EngineRotorPair> acquireEngineRotorPair() {
         log.info("Trying to acquire existent engine rotor pair...");
 
-        List<EngineRotorPair> engineRotorPairs = componentRepository.takeComponents(
+        List<EngineRotorPair> engineRotorPairs = rawComponentRepository.takeComponents(
                 new EntitySpecification(EngineRotorPair.class)
         );
 
@@ -84,7 +84,7 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
     private Optional<EngineRotorPair> assembleEngineRotorPair() {
         log.info("Assembling new engine rotor pair...");
 
-        List<Component> components = componentRepository.takeComponents(
+        List<RawComponent> components = rawComponentRepository.takeComponents(
                 new EntitySpecification(Engine.class),
                 new EntitySpecification(Rotor.class)
         );
@@ -111,6 +111,6 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
         List<EngineRotorPair> availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
         EngineRotorPair[] engineRotorPairs = availableEngineRotorPairs.toArray(new EngineRotorPair[availableEngineRotorPairs.size()]);
 
-        componentRepository.write(engineRotorPairs);
+        rawComponentRepository.write(engineRotorPairs);
     }
 }
