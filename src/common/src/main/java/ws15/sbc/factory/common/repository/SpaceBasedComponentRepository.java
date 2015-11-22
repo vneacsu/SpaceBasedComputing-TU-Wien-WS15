@@ -1,8 +1,6 @@
 package ws15.sbc.factory.common.repository;
 
-import org.mozartspaces.capi3.Coordinator;
-import org.mozartspaces.capi3.FifoCoordinator;
-import org.mozartspaces.capi3.TypeCoordinator;
+import org.mozartspaces.capi3.*;
 import org.mozartspaces.core.*;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
@@ -16,10 +14,13 @@ import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.mozartspaces.core.MzsConstants.*;
+import static org.mozartspaces.core.MzsConstants.RequestTimeout.ZERO;
 
 public class SpaceBasedComponentRepository implements ComponentRepository {
 
@@ -77,6 +78,21 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
             capi.write(new Entry(serializable), cref);
         } catch (MzsCoreException e) {
             throw new IllegalStateException("Could not connect to container", e);
+        }
+    }
+
+    @Override
+    public <T extends Serializable> List<T> takeComponents(ComponentSpecification... componentSpecifications) {
+        List<Selector> selectors = asList(componentSpecifications).stream()
+                .map(spec -> TypeCoordinator.newSelector(spec.getClazz(), spec.getCount()))
+                .collect(Collectors.toList());
+
+        try {
+            return capi.take(cref, selectors, ZERO, currentTransaction.get());
+        } catch (CountNotMetException e) {
+            return emptyList();
+        } catch (MzsCoreException e) {
+            throw new RuntimeException(e);
         }
     }
 

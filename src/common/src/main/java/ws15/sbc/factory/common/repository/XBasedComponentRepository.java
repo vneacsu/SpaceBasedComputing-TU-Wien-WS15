@@ -14,6 +14,11 @@ public class XBasedComponentRepository implements ComponentRepository {
     }
 
     @Override
+    public <T extends Serializable> List<T> takeComponents(ComponentSpecification... componentSpecifications) {
+        return null;
+    }
+
+    @Override
     public List<Component> readAll() {
         throw new UnsupportedOperationException(); // follows later
     }
@@ -26,5 +31,20 @@ public class XBasedComponentRepository implements ComponentRepository {
     @Override
     public void close() {
         throw new UnsupportedOperationException(); // follows later
+    }
+
+    @Override
+    public void beginTransaction() {
+
+    }
+
+    @Override
+    public void commit() {
+
+    }
+
+    @Override
+    public void rollback() {
+
     }
 }

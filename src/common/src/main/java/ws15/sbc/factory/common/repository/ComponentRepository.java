@@ -10,6 +10,8 @@ public interface ComponentRepository extends TransactionAware {
 
     void write(Serializable serializable);
 
+    <T extends Serializable> List<T> takeComponents(ComponentSpecification... componentSpecifications);
+
     List<Component> readAll();
 
     void onComponent(Consumer<Component> consumer);
