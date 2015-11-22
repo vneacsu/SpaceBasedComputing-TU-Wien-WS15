@@ -3,6 +3,7 @@ package ws15.sbc.factory.supply;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import ws15.sbc.factory.common.CommonModule;
+import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.repository.ComponentRepository;
 import ws15.sbc.factory.dto.factory.*;
 
@@ -38,6 +39,8 @@ public class Main {
         Long interval = Long.parseLong(getProperty("interval").orElseThrow(() -> new IllegalArgumentException("No interval specified")));
 
         new SupplyRobot(componentRepository, componentFactory, quantity, interval).run();
+
+        injector.getInstance(AppManager.class).shutdown();
     }
 
     private static Optional<String> getProperty(String s) {

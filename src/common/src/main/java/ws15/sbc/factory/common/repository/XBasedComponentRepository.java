@@ -30,11 +30,6 @@ public class XBasedComponentRepository implements ComponentRepository {
     }
 
     @Override
-    public void close() {
-        throw new UnsupportedOperationException(); // follows later
-    }
-
-    @Override
     public void beginTransaction() {
         throw new UnsupportedOperationException();
     }

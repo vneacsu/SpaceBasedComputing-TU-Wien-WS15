@@ -131,11 +131,6 @@ public class SpaceBasedComponentRepository implements ComponentRepository {
     }
 
     @Override
-    public void close() {
-        core.shutdown(false);
-    }
-
-    @Override
     public void beginTransaction() {
         LOG.info("Begin transaction for components repository");
 

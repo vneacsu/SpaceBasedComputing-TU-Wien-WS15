@@ -44,7 +44,6 @@ public class SupplyRobot {
             try { Thread.sleep(interval); } catch (InterruptedException e) { e.printStackTrace(); }
         }
 
-        componentRepository.close();
         LOG.info("{} robot goes to sleep", id);
     }
 

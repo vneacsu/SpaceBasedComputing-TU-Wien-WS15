@@ -15,6 +15,4 @@ public interface ComponentRepository extends TransactionAware {
 
     void onComponent(Consumer<Component> consumer);
 
-    void close();
-
 }
