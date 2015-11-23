@@ -1,5 +1,6 @@
 package ws15.sbc.factory.common.repository.mzs;
 
+import com.google.common.base.Preconditions;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.MzsCoreException;
 import org.mozartspaces.core.TransactionReference;
@@ -28,6 +29,8 @@ public class SpaceBasedTxManager implements TxManager<TransactionReference> {
 
     @Override
     public void beginTransaction() {
+        Preconditions.checkState(currentTransaction.get() == null, "Transaction already in progress!");
+
         log.info("Begin transaction for components repository");
 
         try {
@@ -41,6 +44,8 @@ public class SpaceBasedTxManager implements TxManager<TransactionReference> {
 
     @Override
     public void commit() {
+        Preconditions.checkNotNull(currentTransaction.get(), "No transaction in progress!");
+
         log.info("Commit current transaction for components repository");
 
         try {
@@ -54,6 +59,8 @@ public class SpaceBasedTxManager implements TxManager<TransactionReference> {
 
     @Override
     public void rollback() {
+        Preconditions.checkNotNull(currentTransaction.get(), "No transaction in progress!");
+
         log.info("Rollback current transaction for components repository");
 
         try {

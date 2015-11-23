@@ -1,11 +1,11 @@
-package ws15.sbc.factory.assembly;
+package ws15.sbc.factory.assembly.steps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.repository.EntitySpecification;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.dto.Engine;
 import ws15.sbc.factory.dto.EngineRotorPair;
 import ws15.sbc.factory.dto.RawComponent;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
+public class EngineRotorPairAssemblyStep extends TransactionalAssemblyStep {
     private static final Logger log = LoggerFactory.getLogger(EngineRotorPairAssemblyStep.class);
 
     private static final int N_ENGINE_ROTOR_PAIRS = 3;
@@ -32,26 +32,11 @@ final class EngineRotorPairAssemblyStep implements AssemblyRobotStep {
     private ProcessedComponentRepository processedComponentRepository;
     @Inject
     private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
-    @Inject
-    private TxManager txManager;
 
     @Override
-    public void performStep() {
+    protected void performStepWithinTransaction() {
         log.info("Performing engine rotor pair assembly step");
 
-        txManager.beginTransaction();
-
-        try {
-            acquireOrAssembleEngineRotorPairs();
-        } catch (Exception e) {
-            txManager.rollback();
-            throw e;
-        }
-
-        txManager.commit();
-    }
-
-    private void acquireOrAssembleEngineRotorPairs() {
         for (int i = 0; i < N_ENGINE_ROTOR_PAIRS; ++i) {
             Optional<EngineRotorPair> engineRotorPair = acquireOrAssembleEngineRotorPair();
 
