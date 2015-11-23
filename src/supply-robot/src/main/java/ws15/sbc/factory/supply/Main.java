@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public class Main {
 
-    private final static RawComponentFactory caseFactory = new CaseFactory();
+    private final static RawComponentFactory caseFactory = new CasingFactory();
     private final static RawComponentFactory controlUnitFactory = new ControlUnitFactory();
     private final static RawComponentFactory engineFactory = new EngineFactory();
     private final static RawComponentFactory rotorFactory = new RotorFactory();

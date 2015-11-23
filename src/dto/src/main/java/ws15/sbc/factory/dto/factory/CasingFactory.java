@@ -1,11 +1,11 @@
 package ws15.sbc.factory.dto.factory;
 
-import ws15.sbc.factory.dto.Case;
+import ws15.sbc.factory.dto.Casing;
 import ws15.sbc.factory.dto.RawComponent;
 
-public class CaseFactory implements RawComponentFactory {
+public class CasingFactory implements RawComponentFactory {
     @Override
     public RawComponent produceRawComponent() {
-        return new Case();
+        return new Casing();
     }
 }
