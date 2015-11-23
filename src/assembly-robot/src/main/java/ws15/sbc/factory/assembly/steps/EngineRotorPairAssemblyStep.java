@@ -64,7 +64,7 @@ public class EngineRotorPairAssemblyStep extends TransactionalAssemblyStep {
     private Optional<EngineRotorPair> acquireEngineRotorPair() {
         log.info("Trying to acquire existent engine rotor pair...");
 
-        List<EngineRotorPair> engineRotorPairs = processedComponentRepository.takeComponents(
+        List<EngineRotorPair> engineRotorPairs = processedComponentRepository.takeEntities(
                 new EntitySpecification(EngineRotorPair.class)
         );
 
@@ -74,7 +74,7 @@ public class EngineRotorPairAssemblyStep extends TransactionalAssemblyStep {
     private Optional<EngineRotorPair> assembleEngineRotorPair() {
         log.info("Assembling new engine rotor pair...");
 
-        List<RawComponent> components = rawComponentRepository.takeComponents(
+        List<RawComponent> components = rawComponentRepository.takeEntities(
                 new EntitySpecification(Engine.class),
                 new EntitySpecification(Rotor.class)
         );
@@ -94,6 +94,6 @@ public class EngineRotorPairAssemblyStep extends TransactionalAssemblyStep {
         List<EngineRotorPair> availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
         EngineRotorPair[] engineRotorPairs = availableEngineRotorPairs.toArray(new EngineRotorPair[availableEngineRotorPairs.size()]);
 
-        processedComponentRepository.write(engineRotorPairs);
+        processedComponentRepository.writeEntities(engineRotorPairs);
     }
 }

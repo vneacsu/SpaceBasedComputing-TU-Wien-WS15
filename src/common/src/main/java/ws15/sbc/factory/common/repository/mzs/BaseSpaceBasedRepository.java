@@ -80,7 +80,7 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     }
 
     @Override
-    public void write(Entity... components) {
+    public void writeEntities(Entity... components) {
         Entry[] entries = asList(components).stream()
                 .map(Entry::new)
                 .collect(toList())
@@ -94,7 +94,7 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     }
 
     @Override
-    public <T extends Entity> List<T> takeComponents(EntitySpecification... entitySpecifications) {
+    public <T extends Entity> List<T> takeEntities(EntitySpecification... entitySpecifications) {
         List<Selector> selectors = asList(entitySpecifications).stream()
                 .map(spec -> TypeCoordinator.newSelector(spec.getClazz(), spec.getCount()))
                 .collect(toList());

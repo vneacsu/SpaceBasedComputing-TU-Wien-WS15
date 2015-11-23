@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 public abstract class BaseXBasedRepository<Entity extends Serializable> implements Repository<Entity> {
 
     @Override
-    public void write(Entity... components) {
+    public void writeEntities(Entity... components) {
         throw new UnsupportedOperationException(); // follows later
     }
 
     @Override
-    public <T extends Entity> List<T> takeComponents(EntitySpecification... entitySpecifications) {
+    public <T extends Entity> List<T> takeEntities(EntitySpecification... entitySpecifications) {
         throw new UnsupportedOperationException();
     }
 

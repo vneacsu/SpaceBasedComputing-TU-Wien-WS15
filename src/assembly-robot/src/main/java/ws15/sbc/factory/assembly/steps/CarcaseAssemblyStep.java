@@ -60,7 +60,7 @@ public class CarcaseAssemblyStep extends TransactionalAssemblyStep {
     private Optional<Carcase> acquireCarcaseFromInventory() {
         log.info("Trying to acquire carcase from inventory");
 
-        List<Carcase> carcases = processedComponentRepository.takeComponents(new EntitySpecification(Carcase.class));
+        List<Carcase> carcases = processedComponentRepository.takeEntities(new EntitySpecification(Carcase.class));
 
         return carcases.isEmpty() ? Optional.empty() : Optional.of(carcases.get(0));
     }
@@ -68,7 +68,7 @@ public class CarcaseAssemblyStep extends TransactionalAssemblyStep {
     private Optional<Carcase> assembleNewCarcase() {
         log.info("Trying to assemble new carcase");
 
-        List<RawComponent> components = rawComponentRepository.takeComponents(
+        List<RawComponent> components = rawComponentRepository.takeEntities(
                 new EntitySpecification(Casing.class),
                 new EntitySpecification(ControlUnit.class)
         );
