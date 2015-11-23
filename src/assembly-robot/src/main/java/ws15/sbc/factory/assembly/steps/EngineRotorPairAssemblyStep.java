@@ -83,16 +83,9 @@ public class EngineRotorPairAssemblyStep extends TransactionalAssemblyStep {
             return Optional.empty();
         }
 
-        simulateAssemblyOperationDelay();
+        AssemblyOperationUtils.simulateAssemblyOperationDelay();
 
         return Optional.of(new EngineRotorPair(robotId, (Engine) components.get(0), (Rotor) components.get(0)));
-    }
-
-    private void simulateAssemblyOperationDelay() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignore) {
-        }
     }
 
     private void storeEngineRotorPairsForFutureUse() {

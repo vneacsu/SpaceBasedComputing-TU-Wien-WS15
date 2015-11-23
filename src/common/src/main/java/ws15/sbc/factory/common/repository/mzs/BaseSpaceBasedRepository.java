@@ -102,6 +102,7 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
         try {
             return capi.take(cref, selectors, ZERO, txManager.currentTransaction());
         } catch (CountNotMetException e) {
+            log.warn("Failed to take entities from space");
             return emptyList();
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
