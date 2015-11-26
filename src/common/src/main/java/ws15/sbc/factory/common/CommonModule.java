@@ -7,12 +7,15 @@ import org.mozartspaces.core.MzsCore;
 import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.app.impl.SpaceBasedAppManager;
 import ws15.sbc.factory.common.app.impl.XBasedAppManager;
+import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
+import ws15.sbc.factory.common.repository.mzs.SpaceBasedDroneRepository;
 import ws15.sbc.factory.common.repository.mzs.SpaceBasedProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.mzs.SpaceBasedRawComponentRepository;
 import ws15.sbc.factory.common.repository.mzs.SpaceBasedTxManager;
+import ws15.sbc.factory.common.repository.xbased.XBasedDroneRepository;
 import ws15.sbc.factory.common.repository.xbased.XBasedProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.xbased.XBasedRawComponentRepository;
 import ws15.sbc.factory.common.repository.xbased.XBasedTxManager;
@@ -27,6 +30,7 @@ public class CommonModule extends PrivateModule {
         expose(AppManager.class);
         expose(RawComponentRepository.class);
         expose(ProcessedComponentRepository.class);
+        expose(DroneRepository.class);
         expose(TxManager.class);
 
         MzsCore core = DefaultMzsCore.newInstance();
@@ -54,6 +58,7 @@ public class CommonModule extends PrivateModule {
         bind(AppManager.class).to(SpaceBasedAppManager.class);
         bind(RawComponentRepository.class).to(SpaceBasedRawComponentRepository.class);
         bind(ProcessedComponentRepository.class).to(SpaceBasedProcessedComponentRepository.class);
+        bind(DroneRepository.class).to(SpaceBasedDroneRepository.class);
         bind(TxManager.class).to(SpaceBasedTxManager.class);
     }
 
@@ -61,6 +66,7 @@ public class CommonModule extends PrivateModule {
         bind(AppManager.class).to(XBasedAppManager.class);
         bind(RawComponentRepository.class).to(XBasedRawComponentRepository.class);
         bind(ProcessedComponentRepository.class).to(XBasedProcessedComponentRepository.class);
+        bind(DroneRepository.class).to(XBasedDroneRepository.class);
         bind(TxManager.class).to(XBasedTxManager.class);
     }
 }
