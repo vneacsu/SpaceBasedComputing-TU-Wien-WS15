@@ -1,4 +1,4 @@
-package ws15.sbc.factory.ui.controllers;
+package ws15.sbc.factory.ui;
 
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
