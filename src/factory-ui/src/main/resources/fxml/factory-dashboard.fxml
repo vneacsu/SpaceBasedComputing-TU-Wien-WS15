@@ -12,8 +12,6 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
     <children>
         <BorderPane prefHeight="200.0" prefWidth="200.0">
@@ -22,8 +20,17 @@
                           BorderPane.alignment="CENTER"/>
             </center>
             <top>
-                <Label text="Raw components" BorderPane.alignment="CENTER"/>
+                <Label text="Raw components inventory" BorderPane.alignment="CENTER"/>
             </top>
+        </BorderPane>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+            <top>
+                <Label text="Processed components inventory" BorderPane.alignment="CENTER"/>
+            </top>
+            <center>
+                <ListView fx:id="processedComponentsListView" prefHeight="200.0" prefWidth="200.0"
+                          BorderPane.alignment="CENTER"/>
+            </center>
         </BorderPane>
     </children>
 </GridPane>
