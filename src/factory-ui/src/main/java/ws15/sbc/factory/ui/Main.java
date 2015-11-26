@@ -9,20 +9,17 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.mozartspaces.core.MzsCoreException;
 import ws15.sbc.factory.common.CommonModule;
+import ws15.sbc.factory.common.app.AppManager;
 
 import java.io.IOException;
 
 public class Main extends Application {
 
-    public static void main(String[] argv) throws MzsCoreException, InterruptedException {
-        launch(argv);
-    }
+    private final Injector injector = Guice.createInjector(new CommonModule());
 
     @Override
     public void start(Stage stage) throws IOException {
-        Injector injector = Guice.createInjector(new CommonModule());
-
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/factory-dashboard.fxml"));
         fxmlLoader.setControllerFactory(injector::getInstance);
         Parent root = fxmlLoader.load();
 
@@ -32,5 +29,15 @@ public class Main extends Application {
         stage.setTitle("Drone factory");
         stage.sizeToScene();
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        injector.getInstance(AppManager.class).shutdown();
+    }
+
+
+    public static void main(String[] argv) throws MzsCoreException, InterruptedException {
+        launch(argv);
     }
 }

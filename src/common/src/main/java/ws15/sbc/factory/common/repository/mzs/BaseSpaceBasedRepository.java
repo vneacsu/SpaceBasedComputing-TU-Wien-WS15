@@ -3,7 +3,6 @@ package ws15.sbc.factory.common.repository.mzs;
 import org.mozartspaces.capi3.*;
 import org.mozartspaces.core.*;
 import org.mozartspaces.core.MzsConstants.Container;
-import org.mozartspaces.core.MzsConstants.RequestTimeout;
 import org.mozartspaces.core.MzsConstants.Selecting;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
@@ -21,9 +20,9 @@ import java.util.function.Consumer;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
+import static org.mozartspaces.core.MzsConstants.RequestTimeout.TRY_ONCE;
 
 public abstract class BaseSpaceBasedRepository<Entity extends Serializable> implements Repository<Entity> {
 
@@ -52,16 +51,16 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     }
 
     private Optional<ContainerReference> getComponentContainer() {
-        log.info("Lookup component container");
+        log.info("Lookup container {}", getContainerName());
 
         try {
             ContainerReference cref = capi.lookupContainer(getContainerName(), space, DEFAULT, null);
 
-            log.info("Components container found");
+            log.info("Container {} found", getContainerName());
 
             return Optional.of(cref);
         } catch (MzsCoreException e) {
-            log.info("Components container not found");
+            log.info("Container {} not found", getContainerName());
             return Optional.empty();
         }
     }
@@ -70,19 +69,21 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
 
 
     private ContainerReference createComponentContainer() {
-        log.info("Creating components container");
+        log.info("Creating container {}", getContainerName());
 
-        List<Coordinator> coordinators = asList(new FifoCoordinator(), new TypeCoordinator());
+        List<Coordinator> coordinators = asList(new AnyCoordinator(), new TypeCoordinator());
 
         try {
             return capi.createContainer(getContainerName(), space, Container.UNBOUNDED, coordinators, null, null);
         } catch (MzsCoreException e) {
-            throw new RuntimeException("Failed to create components container", e);
+            throw new RuntimeException("Failed to create container", e);
         }
     }
 
     @Override
     public void writeEntities(Entity... components) {
+        log.info("Writing entities to container {}", getContainerName());
+
         Entry[] entries = asList(components).stream()
                 .map(Entry::new)
                 .collect(toList())
@@ -97,6 +98,8 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
 
     @Override
     public <T extends Entity> List<T> takeEntities(EntitySpecification... entitySpecifications) {
+        log.info("Taking entities from container {}", getContainerName());
+
         List<Selector> selectors = asList(entitySpecifications).stream()
                 .map(spec -> TypeCoordinator.newSelector(spec.getClazz(), spec.getCount()))
                 .collect(toList());
@@ -113,12 +116,16 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
 
     @Override
     public List<Entity> readAll() {
+        log.info("Reading all entities from container {}", getContainerName());
+
         try {
-            // TODO use transactions to block the container
-            List<FifoCoordinator.FifoSelector> selectors = singletonList(FifoCoordinator.newSelector(Selecting.COUNT_ALL));
-            return capi.read(this.cref, selectors, RequestTimeout.TRY_ONCE, null);
+            capi.lockContainer(cref, txManager.currentTransaction());
+
+            Selector selector = AnyCoordinator.newSelector(Selecting.COUNT_ALL);
+
+            return capi.read(cref, selector, TRY_ONCE, txManager.currentTransaction());
         } catch (MzsCoreException e) {
-            throw new IllegalStateException("Could not read from container", e);
+            throw new RuntimeException(e);
         }
     }
 

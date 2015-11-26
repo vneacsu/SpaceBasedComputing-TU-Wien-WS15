@@ -30,13 +30,13 @@ public class Main {
     public static void main(String[] argv) {
         Injector injector = Guice.createInjector(new CommonModule());
 
-        RawComponentRepository rawComponentRepository = injector.getInstance(RawComponentRepository.class);
-
         Optional<String> componentType = getProperty("componentType");
         RawComponentFactory rawComponentFactory = componentFactoryMap.get(componentType.orElseThrow(() -> new IllegalArgumentException("No component type specified")));
 
         Integer quantity = Integer.parseInt(getProperty("quantity").orElseThrow(() -> new IllegalArgumentException("No quantity specified")));
         Long interval = Long.parseLong(getProperty("interval").orElseThrow(() -> new IllegalArgumentException("No interval specified")));
+
+        RawComponentRepository rawComponentRepository = injector.getInstance(RawComponentRepository.class);
 
         new SupplyRobot(rawComponentRepository, rawComponentFactory, quantity, interval).run();
 

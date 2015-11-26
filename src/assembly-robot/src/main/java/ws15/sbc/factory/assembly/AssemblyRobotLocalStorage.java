@@ -1,7 +1,6 @@
 package ws15.sbc.factory.assembly;
 
 import com.google.common.base.Preconditions;
-import com.sun.istack.internal.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.dto.Carcase;
@@ -23,7 +22,7 @@ public class AssemblyRobotLocalStorage {
 
     private Optional<Carcase> availableCarcase = Optional.empty();
 
-    public void storeEngineRotorPair(@NotNull EngineRotorPair engineRotorPair) {
+    public void storeEngineRotorPair(EngineRotorPair engineRotorPair) {
         Preconditions.checkState(availableEngineRotorPairs.size() < ENGINE_ROTOR_PAIRS_CAPACITY,
                 "Should only store maximal %s engine rotor pairs", ENGINE_ROTOR_PAIRS_CAPACITY);
 
@@ -40,7 +39,7 @@ public class AssemblyRobotLocalStorage {
         return result;
     }
 
-    public void storeCarcase(@NotNull Carcase carcase) {
+    public void storeCarcase(Carcase carcase) {
         Preconditions.checkState(!availableCarcase.isPresent(),
                 "Should only store maximal 1 carcase in local storage");
 
