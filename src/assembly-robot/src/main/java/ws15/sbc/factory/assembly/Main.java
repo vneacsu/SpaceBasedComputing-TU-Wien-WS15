@@ -5,20 +5,41 @@ import com.google.inject.Injector;
 import org.mozartspaces.core.MzsCoreException;
 import ws15.sbc.factory.common.CommonModule;
 import ws15.sbc.factory.common.app.AppManager;
+import ws15.sbc.factory.common.utils.PropertyUtils;
+
+import java.util.UUID;
 
 public class Main {
 
+    private static final String robotId = PropertyUtils.getProperty("robotId").orElse(UUID.randomUUID().toString());
+
+    private static final Injector injector = Guice.createInjector(
+            new CommonModule(),
+            new AssemblyRobotModule(robotId)
+    );
+
+    private static final AssemblyRobot assemblyRobot = injector.getInstance(AssemblyRobot.class);
+
+    private static final AppManager appManager = injector.getInstance(AppManager.class);
+
     public static void main(String[] argv) throws MzsCoreException {
-        String id = "dummy";
+        registerShutdownHook();
 
-        Injector injector = Guice.createInjector(
-                new CommonModule(),
-                new AssemblyRobotModule(id)
-        );
-
-        injector.getInstance(AssemblyRobot.class).run();
-
-        injector.getInstance(AppManager.class).shutdown();
+        assemblyRobot.run();
     }
 
+    private static void registerShutdownHook() {
+        Thread mainThread = Thread.currentThread();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    assemblyRobot.stop();
+                    try {
+                        mainThread.join();
+                    } catch (InterruptedException ignore) {
+                    }
+
+                    appManager.shutdown();
+                })
+        );
+    }
 }

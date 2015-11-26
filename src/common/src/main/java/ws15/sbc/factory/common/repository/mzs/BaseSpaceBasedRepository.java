@@ -23,11 +23,13 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
-import static org.mozartspaces.core.MzsConstants.RequestTimeout.ZERO;
+import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
 
 public abstract class BaseSpaceBasedRepository<Entity extends Serializable> implements Repository<Entity> {
 
     private static final Logger log = LoggerFactory.getLogger(BaseSpaceBasedRepository.class);
+
+    private static final int TAKE_TIMEOUT = 2 * 1000;
 
     private URI space;
     private MzsCore core;
@@ -53,7 +55,7 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
         log.info("Lookup component container");
 
         try {
-            ContainerReference cref = capi.lookupContainer(getContainerName(), space, RequestTimeout.DEFAULT, null);
+            ContainerReference cref = capi.lookupContainer(getContainerName(), space, DEFAULT, null);
 
             log.info("Components container found");
 
@@ -87,7 +89,7 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
                 .toArray(new Entry[components.length]);
 
         try {
-            capi.write(cref, ZERO, txManager.currentTransaction(), entries);
+            capi.write(cref, DEFAULT, txManager.currentTransaction(), entries);
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }
@@ -100,8 +102,8 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
                 .collect(toList());
 
         try {
-            return capi.take(cref, selectors, ZERO, txManager.currentTransaction());
-        } catch (CountNotMetException e) {
+            return capi.take(cref, selectors, TAKE_TIMEOUT, txManager.currentTransaction());
+        } catch (CountNotMetException | MzsTimeoutException e) {
             log.warn("Failed to take entities from space");
             return emptyList();
         } catch (MzsCoreException e) {

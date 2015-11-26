@@ -10,6 +10,7 @@ import ws15.sbc.factory.assembly.steps.EngineRotorPairAssemblyStep;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Arrays.asList;
 
@@ -30,12 +31,22 @@ public class AssemblyRobot {
     @Inject
     private DroneAsemblyStep droneAsemblyStep;
 
+    private final AtomicBoolean keepWorking = new AtomicBoolean(true);
+
     public void run() {
         log.info("Starting assembly robot <{}> started work", robotId);
 
-        asList(engineRotorPairAssemblyStep, carcaseAssemblyStep, droneAsemblyStep)
-                .forEach(AssemblyStep::performStep);
+        while (keepWorking.get()) {
+            asList(engineRotorPairAssemblyStep, carcaseAssemblyStep, droneAsemblyStep)
+                    .forEach(AssemblyStep::performStep);
+        }
 
         log.info("Assembly robot <{}> finished work", robotId);
+    }
+
+    public void stop() {
+        log.info("Stopping assembly robot {}", robotId);
+
+        keepWorking.set(false);
     }
 }
