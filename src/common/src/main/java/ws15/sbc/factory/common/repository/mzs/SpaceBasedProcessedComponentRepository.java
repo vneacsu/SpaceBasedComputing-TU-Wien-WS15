@@ -1,7 +1,7 @@
 package ws15.sbc.factory.common.repository.mzs;
 
 import org.mozartspaces.core.Capi;
-import org.mozartspaces.core.MzsCore;
+import org.mozartspaces.notifications.NotificationManager;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.dto.ProcessedComponent;
 
@@ -13,8 +13,8 @@ import java.net.URI;
 public class SpaceBasedProcessedComponentRepository extends BaseSpaceBasedRepository<ProcessedComponent> implements ProcessedComponentRepository {
 
     @Inject
-    public SpaceBasedProcessedComponentRepository(SpaceBasedTxManager txManager, MzsCore core, Capi capi, URI space) {
-        super(txManager, core, capi, space);
+    public SpaceBasedProcessedComponentRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {
+        super(txManager, capi, notificationManager, space);
     }
 
     @Override

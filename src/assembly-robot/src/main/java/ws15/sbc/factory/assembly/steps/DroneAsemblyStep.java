@@ -71,7 +71,7 @@ public class DroneAsemblyStep extends TransactionalAssemblyStep {
 
         clearAvailableComponents();
 
-        droneRepository.writeEntities(drone);
+        droneRepository.storeEntities(drone);
     }
 
     private void clearAvailableComponents() {
@@ -83,10 +83,10 @@ public class DroneAsemblyStep extends TransactionalAssemblyStep {
         log.info("Storing available engine rotor pairs and carcase in inventory, for future use");
 
         if (availableEngineRotorPairs.size() > 0) {
-            processedComponentRepository.writeEntities(availableEngineRotorPairsAsArray());
+            processedComponentRepository.storeEntities(availableEngineRotorPairsAsArray());
         }
 
-        availableCarcase.ifPresent(carcase -> processedComponentRepository.writeEntities(carcase));
+        availableCarcase.ifPresent(carcase -> processedComponentRepository.storeEntities(carcase));
 
         clearAvailableComponents();
     }

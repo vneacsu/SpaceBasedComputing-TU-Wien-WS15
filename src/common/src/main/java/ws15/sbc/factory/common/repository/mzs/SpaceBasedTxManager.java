@@ -16,7 +16,7 @@ import java.net.URI;
 @Singleton
 public class SpaceBasedTxManager implements TxManager<TransactionReference> {
 
-    private static final int TIMEOUT_MS = 20 * 1000;
+    private static final int TIMEOUT_MS = 120 * 1000;
 
     private static final Logger log = LoggerFactory.getLogger(SpaceBasedAppManager.class);
 

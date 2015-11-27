@@ -31,18 +31,19 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     private static final int TAKE_TIMEOUT = 2 * 1000;
 
     private URI space;
-    private MzsCore core;
     private Capi capi;
+    private NotificationManager notificationManager;
     private ContainerReference cref;
 
     private SpaceBasedTxManager txManager;
 
-    public BaseSpaceBasedRepository(SpaceBasedTxManager txManager, MzsCore core, Capi capi, URI space) {
+    public BaseSpaceBasedRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {
         this.space = space;
         this.txManager = txManager;
 
-        this.core = core;
         this.capi = capi;
+        this.notificationManager = notificationManager;
+
         cref = getOrCreateComponentContainer();
     }
 
@@ -81,7 +82,7 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     }
 
     @Override
-    public void writeEntities(Entity... components) {
+    public void storeEntities(Entity... components) {
         log.info("Writing entities to container {}", getContainerName());
 
         Entry[] entries = asList(components).stream()
@@ -130,19 +131,31 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     }
 
     @Override
-    public void onComponent(Consumer<Entity> consumer) {
-        NotificationManager notifManager = new NotificationManager(core);
-
-        NotificationListener notifListener = (source, operation, entries) -> {
-            Entry entry = (Entry) CapiUtil.getSingleEntry(entries);
-            Entity component = (Entity) entry.getValue();
-            consumer.accept(component);
+    public void onEntityStored(Consumer<Entity> consumer) {
+        NotificationListener notificationListener = (source, operation, entries) -> {
+            entries.stream()
+                    .map(e -> ((Entry) e).getValue())
+                    .forEach(e -> consumer.accept((Entity) e));
         };
 
         try {
-            notifManager.createNotification(cref, notifListener, Operation.WRITE);
+            notificationManager.createNotification(cref, notificationListener, Operation.WRITE);
         } catch (MzsCoreException | InterruptedException e) {
-            throw new IllegalStateException("Could not set onWrite notification", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onEntityTaken(Consumer<Entity> consumer) {
+        NotificationListener notificationListener = (source, operation, entries) -> {
+            entries.stream()
+                    .forEach(e -> consumer.accept((Entity) e));
+        };
+
+        try {
+            notificationManager.createNotification(cref, notificationListener, Operation.TAKE);
+        } catch (MzsCoreException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }

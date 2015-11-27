@@ -26,7 +26,7 @@ public class FactoryDashboardController implements Initializable {
     private RawComponentRepository rawComponentRepository;
 
     @Inject
-    private ProcessedComponentRepository processedRawComponentRepository;
+    private ProcessedComponentRepository processedComponentRepository;
 
     @Inject
     private TxManager txManager;
@@ -62,7 +62,7 @@ public class FactoryDashboardController implements Initializable {
 
         try {
             observableRawComponents.addAll(rawComponentRepository.readAll());
-            observableProcessedComponents.addAll(processedRawComponentRepository.readAll());
+            observableProcessedComponents.addAll(processedComponentRepository.readAll());
         } catch (Exception e) {
             txManager.rollback();
             throw e;
@@ -72,6 +72,7 @@ public class FactoryDashboardController implements Initializable {
     }
 
     private void registerInventoryChangeListeners() {
-        rawComponentRepository.onComponent(rawComponent -> Platform.runLater(() -> observableRawComponents.add(rawComponent)));
+        rawComponentRepository.onEntityStored(component -> Platform.runLater(() -> observableRawComponents.add(component)));
+        processedComponentRepository.onEntityStored(component -> Platform.runLater(() -> observableProcessedComponents.add(component)));
     }
 }

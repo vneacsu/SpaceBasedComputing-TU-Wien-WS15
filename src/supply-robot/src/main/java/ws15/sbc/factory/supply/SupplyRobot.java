@@ -38,7 +38,7 @@ public class SupplyRobot {
         //noinspection InfiniteLoopStatement
         for (int i = 0; i < quantity; i++) {
             RawComponent rawComponent = rawComponentFactory.produceRawComponent();
-            rawComponentRepository.writeEntities(rawComponent);
+            rawComponentRepository.storeEntities(rawComponent);
             LOG.info("{} delivered by robot {}", rawComponent, id);
 
             try { Thread.sleep(interval); } catch (InterruptedException e) { e.printStackTrace(); }

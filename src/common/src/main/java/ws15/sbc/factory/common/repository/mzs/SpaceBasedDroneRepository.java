@@ -1,7 +1,7 @@
 package ws15.sbc.factory.common.repository.mzs;
 
 import org.mozartspaces.core.Capi;
-import org.mozartspaces.core.MzsCore;
+import org.mozartspaces.notifications.NotificationManager;
 import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.dto.Drone;
 
@@ -13,8 +13,8 @@ import java.net.URI;
 public class SpaceBasedDroneRepository extends BaseSpaceBasedRepository<Drone> implements DroneRepository {
 
     @Inject
-    public SpaceBasedDroneRepository(SpaceBasedTxManager txManager, MzsCore core, Capi capi, URI space) {
-        super(txManager, core, capi, space);
+    public SpaceBasedDroneRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {
+        super(txManager, capi, notificationManager, space);
     }
 
     @Override

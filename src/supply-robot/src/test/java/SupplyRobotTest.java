@@ -16,7 +16,7 @@ public class SupplyRobotTest {
 
         new SupplyRobot(rawComponentRepository, rotorFactory, 3, 100L).run();
 
-        verify(rawComponentRepository, times(3)).writeEntities(anyObject());
+        verify(rawComponentRepository, times(3)).storeEntities(anyObject());
     }
 
 }

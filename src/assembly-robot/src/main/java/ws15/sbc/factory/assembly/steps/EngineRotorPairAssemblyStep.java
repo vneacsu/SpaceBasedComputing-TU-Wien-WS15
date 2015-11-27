@@ -94,6 +94,6 @@ public class EngineRotorPairAssemblyStep extends TransactionalAssemblyStep {
         List<EngineRotorPair> availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
         EngineRotorPair[] engineRotorPairs = availableEngineRotorPairs.toArray(new EngineRotorPair[availableEngineRotorPairs.size()]);
 
-        processedComponentRepository.writeEntities(engineRotorPairs);
+        processedComponentRepository.storeEntities(engineRotorPairs);
     }
 }

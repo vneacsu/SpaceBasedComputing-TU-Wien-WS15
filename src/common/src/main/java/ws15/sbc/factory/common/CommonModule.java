@@ -4,6 +4,7 @@ import com.google.inject.PrivateModule;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.DefaultMzsCore;
 import org.mozartspaces.core.MzsCore;
+import org.mozartspaces.notifications.NotificationManager;
 import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.app.impl.SpaceBasedAppManager;
 import ws15.sbc.factory.common.app.impl.XBasedAppManager;
@@ -37,6 +38,7 @@ public class CommonModule extends PrivateModule {
 
         bind(MzsCore.class).toInstance(core);
         bind(Capi.class).toInstance(new Capi(core));
+        bind(NotificationManager.class).toInstance(new NotificationManager(core));
 
         bind(URI.class).toInstance(URI.create("xvsm://localhost:4242"));
 

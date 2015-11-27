@@ -6,12 +6,13 @@ import java.util.function.Consumer;
 
 public interface Repository<Entity extends Serializable> {
 
-    void writeEntities(Entity... entities);
+    void storeEntities(Entity... entities);
 
     <T extends Entity> List<T> takeEntities(EntitySpecification... entitySpecifications);
 
     List<Entity> readAll();
 
-    void onComponent(Consumer<Entity> consumer);
+    void onEntityStored(Consumer<Entity> consumer);
 
+    void onEntityTaken(Consumer<Entity> consumer);
 }
