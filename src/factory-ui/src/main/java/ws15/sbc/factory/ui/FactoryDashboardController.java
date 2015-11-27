@@ -1,18 +1,14 @@
 package ws15.sbc.factory.ui;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
-import ws15.sbc.factory.dto.ProcessedComponent;
-import ws15.sbc.factory.dto.RawComponent;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -24,45 +20,33 @@ public class FactoryDashboardController implements Initializable {
 
     @Inject
     private RawComponentRepository rawComponentRepository;
-
     @Inject
     private ProcessedComponentRepository processedComponentRepository;
+    @Inject
+    private DroneRepository droneRepository;
 
     @Inject
     private TxManager txManager;
 
     @FXML
-    private ListView<RawComponent> rawComponentsListView;
-
-    @FXML
-    private ListView<ProcessedComponent> processedComponentsListView;
-
-    private ObservableList<RawComponent> observableRawComponents = FXCollections.observableArrayList();
-
-    private ObservableList<ProcessedComponent> observableProcessedComponents = FXCollections.observableArrayList();
+    private FactoryDashboardModel model;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         log.info("Initializing factory dashboard controller");
-
-        initializeListViews();
 
         synchronizeCurrentInventoryState();
 
         registerInventoryChangeListeners();
     }
 
-    private void initializeListViews() {
-        rawComponentsListView.setItems(observableRawComponents);
-        processedComponentsListView.setItems(observableProcessedComponents);
-    }
-
     private void synchronizeCurrentInventoryState() {
         txManager.beginTransaction();
 
         try {
-            observableRawComponents.addAll(rawComponentRepository.readAll());
-            observableProcessedComponents.addAll(processedComponentRepository.readAll());
+            model.getRawComponents().addAll(rawComponentRepository.readAll());
+            model.getProcessedComponents().addAll(processedComponentRepository.readAll());
+            model.getDrones().addAll(droneRepository.readAll());
         } catch (Exception e) {
             txManager.rollback();
             throw e;
@@ -72,10 +56,13 @@ public class FactoryDashboardController implements Initializable {
     }
 
     private void registerInventoryChangeListeners() {
-        rawComponentRepository.onEntityStored(component -> Platform.runLater(() -> observableRawComponents.add(component)));
-        processedComponentRepository.onEntityStored(component -> Platform.runLater(() -> observableProcessedComponents.add(component)));
+        rawComponentRepository.onEntityStored(component -> Platform.runLater(() -> model.getRawComponents().add(component)));
+        rawComponentRepository.onEntityTaken(component -> Platform.runLater(() -> model.getRawComponents().remove(component)));
 
-        rawComponentRepository.onEntityTaken(component -> Platform.runLater(() -> observableRawComponents.remove(component)));
-        processedComponentRepository.onEntityTaken(component -> Platform.runLater(() -> observableProcessedComponents.remove(component)));
+        processedComponentRepository.onEntityStored(component -> Platform.runLater(() -> model.getProcessedComponents().add(component)));
+        processedComponentRepository.onEntityTaken(component -> Platform.runLater(() -> model.getProcessedComponents().remove(component)));
+
+        droneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getDrones().add(drone))));
+        droneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getDrones().remove(drone))));
     }
 }
