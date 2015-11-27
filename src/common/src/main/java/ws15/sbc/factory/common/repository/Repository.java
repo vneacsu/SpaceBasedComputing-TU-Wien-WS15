@@ -2,13 +2,14 @@ package ws15.sbc.factory.common.repository;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public interface Repository<Entity extends Serializable> {
 
     void storeEntities(Entity... entities);
 
-    <T extends Entity> List<T> takeEntities(EntitySpecification... entitySpecifications);
+    <T extends Entity> Optional<T> takeOne(Class<T> clazz);
 
     List<Entity> readAll();
 

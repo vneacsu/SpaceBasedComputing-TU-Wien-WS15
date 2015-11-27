@@ -37,12 +37,8 @@ public class AssemblyRobot {
         log.info("Starting assembly robot <{}> started work", robotId);
 
         while (keepWorking.get()) {
-            try {
-                asList(engineRotorPairAssemblyStep, carcaseAssemblyStep, droneAsemblyStep)
-                        .forEach(AssemblyStep::performStep);
-            } catch (Exception e) {
-                log.error("Assembly exception caught", e);
-            }
+            asList(engineRotorPairAssemblyStep, carcaseAssemblyStep, droneAsemblyStep)
+                    .forEach(AssemblyStep::performStep);
         }
 
         log.info("Assembly robot <{}> finished work", robotId);

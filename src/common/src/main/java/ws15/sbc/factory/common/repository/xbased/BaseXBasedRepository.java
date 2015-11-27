@@ -1,10 +1,10 @@
 package ws15.sbc.factory.common.repository.xbased;
 
-import ws15.sbc.factory.common.repository.EntitySpecification;
 import ws15.sbc.factory.common.repository.Repository;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public abstract class BaseXBasedRepository<Entity extends Serializable> implements Repository<Entity> {
@@ -15,7 +15,7 @@ public abstract class BaseXBasedRepository<Entity extends Serializable> implemen
     }
 
     @Override
-    public <T extends Entity> List<T> takeEntities(EntitySpecification... entitySpecifications) {
+    public <T extends Entity> Optional<T> takeOne(Class<T> clazz) {
         throw new UnsupportedOperationException();
     }
 

@@ -9,7 +9,6 @@ import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.repository.EntitySpecification;
 import ws15.sbc.factory.common.repository.Repository;
 
 import java.io.Serializable;
@@ -19,7 +18,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.TRY_ONCE;
@@ -98,18 +96,16 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     }
 
     @Override
-    public <T extends Entity> List<T> takeEntities(EntitySpecification... entitySpecifications) {
-        log.info("Taking entities from container {}", getContainerName());
-
-        List<Selector> selectors = asList(entitySpecifications).stream()
-                .map(spec -> TypeCoordinator.newSelector(spec.getClazz(), spec.getCount()))
-                .collect(toList());
+    public <T extends Entity> Optional<T> takeOne(Class<T> clazz) {
+        log.info("Taking one entity of type {} from container {}", clazz, getContainerName());
 
         try {
-            return capi.take(cref, selectors, TAKE_TIMEOUT, txManager.currentTransaction());
+            List<T> entities = capi.take(cref, TypeCoordinator.newSelector(clazz), TAKE_TIMEOUT, txManager.currentTransaction());
+
+            return Optional.of(entities.get(0));
         } catch (CountNotMetException | MzsTimeoutException e) {
-            log.warn("Failed to take entities from space");
-            return emptyList();
+            log.warn("Failed to take entity from container");
+            return Optional.empty();
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }

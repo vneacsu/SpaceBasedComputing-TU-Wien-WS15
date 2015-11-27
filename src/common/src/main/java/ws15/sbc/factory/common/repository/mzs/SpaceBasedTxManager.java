@@ -3,6 +3,7 @@ package ws15.sbc.factory.common.repository.mzs;
 import com.google.common.base.Preconditions;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.MzsCoreException;
+import org.mozartspaces.core.MzsTimeoutException;
 import org.mozartspaces.core.TransactionReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ public class SpaceBasedTxManager implements TxManager<TransactionReference> {
     public void beginTransaction() {
         Preconditions.checkState(currentTransaction.get() == null, "Transaction already in progress!");
 
-        log.info("Begin transaction for components repository");
+        log.info("Begin transaction for space {}", space);
 
         try {
             TransactionReference tref = capi.createTransaction(TIMEOUT_MS, space);
@@ -46,12 +47,14 @@ public class SpaceBasedTxManager implements TxManager<TransactionReference> {
     public void commit() {
         Preconditions.checkNotNull(currentTransaction.get(), "No transaction in progress!");
 
-        log.info("Commit current transaction for components repository");
+        log.info("Commit current transaction for space {}", space);
 
         try {
             capi.commitTransaction(currentTransaction.get());
 
             currentTransaction.set(null);
+        } catch (MzsTimeoutException e) {
+            log.warn("Transaction timed out! Changes were rolled back");
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }
@@ -61,12 +64,14 @@ public class SpaceBasedTxManager implements TxManager<TransactionReference> {
     public void rollback() {
         Preconditions.checkNotNull(currentTransaction.get(), "No transaction in progress!");
 
-        log.info("Rollback current transaction for components repository");
+        log.info("Rollback current transaction for space {}", space);
 
         try {
             capi.rollbackTransaction(currentTransaction.get());
 
             currentTransaction.set(null);
+        } catch (MzsTimeoutException e) {
+            log.warn("Transaction timed out! Changes were rolled back");
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }

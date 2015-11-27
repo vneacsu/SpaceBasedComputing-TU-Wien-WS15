@@ -19,7 +19,7 @@ import java.util.Optional;
 import static java.util.Collections.emptyList;
 
 @Singleton
-public class DroneAsemblyStep extends TransactionalAssemblyStep {
+public class DroneAsemblyStep implements AssemblyStep {
 
     private static final Logger log = LoggerFactory.getLogger(DroneAsemblyStep.class);
 
@@ -40,7 +40,7 @@ public class DroneAsemblyStep extends TransactionalAssemblyStep {
     private Optional<Carcase> availableCarcase = Optional.empty();
 
     @Override
-    protected void performStepWithinTransaction() {
+    public void performStep() {
         log.info("Performing drone assembly step");
 
         acquireComponentsFromLocalStorage();
