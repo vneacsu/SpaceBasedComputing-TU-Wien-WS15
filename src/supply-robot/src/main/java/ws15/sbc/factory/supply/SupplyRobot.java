@@ -7,44 +7,42 @@ import ws15.sbc.factory.common.repository.mzs.SpaceBasedRawComponentRepository;
 import ws15.sbc.factory.dto.RawComponent;
 import ws15.sbc.factory.dto.factory.RawComponentFactory;
 
-import java.util.UUID;
-
 public class SupplyRobot {
 
     final static Logger LOG = LoggerFactory.getLogger(SpaceBasedRawComponentRepository.class);
 
-    private final String id;
+    private final String robotId;
     private final RawComponentRepository rawComponentRepository;
     private final RawComponentFactory rawComponentFactory;
     private final Integer quantity;
     private final Long interval;
 
-    public SupplyRobot(RawComponentRepository rawComponentRepository,
+    public SupplyRobot(String robotId, RawComponentRepository rawComponentRepository,
                        RawComponentFactory rawComponentFactory,
                        Integer quantity,
                        Long interval) {
+        this.robotId = robotId;
         this.rawComponentRepository = rawComponentRepository;
         this.rawComponentFactory = rawComponentFactory;
         this.quantity = quantity;
         this.interval = interval;
 
-        id = UUID.randomUUID().toString();
-        LOG.info("{} robot created", id);
+        LOG.info("{} robot created", this.robotId);
     }
 
     public void run() {
-        LOG.info("{} robot is working hard", id);
+        LOG.info("{} robot is working hard", robotId);
 
         //noinspection InfiniteLoopStatement
         for (int i = 0; i < quantity; i++) {
-            RawComponent rawComponent = rawComponentFactory.produceRawComponent();
+            RawComponent rawComponent = rawComponentFactory.produceRawComponent(robotId);
             rawComponentRepository.storeEntity(rawComponent);
-            LOG.info("{} delivered by robot {}", rawComponent, id);
+            LOG.info("{} delivered by robot {}", rawComponent, robotId);
 
             try { Thread.sleep(interval); } catch (InterruptedException e) { e.printStackTrace(); }
         }
 
-        LOG.info("{} robot goes to sleep", id);
+        LOG.info("{} robot goes to sleep", robotId);
     }
 
 }

@@ -6,8 +6,8 @@ import ws15.sbc.factory.dto.Rotor;
 public class RotorFactory implements RawComponentFactory {
 
     @Override
-    public RawComponent produceRawComponent() {
-        return new Rotor();
+    public RawComponent produceRawComponent(String robotId) {
+        return new Rotor(robotId);
     }
 
 }

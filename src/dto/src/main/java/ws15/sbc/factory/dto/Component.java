@@ -1,6 +1,7 @@
 package ws15.sbc.factory.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.UUID;
 
 public abstract class Component implements Serializable {
@@ -16,9 +17,15 @@ public abstract class Component implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "Component{" +
-                "id='" + id + '\'' +
-                '}';
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Component)) return false;
+        Component component = (Component) o;
+        return Objects.equals(id, component.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

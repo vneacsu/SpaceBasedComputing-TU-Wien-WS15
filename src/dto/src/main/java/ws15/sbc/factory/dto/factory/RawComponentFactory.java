@@ -4,5 +4,5 @@ import ws15.sbc.factory.dto.RawComponent;
 
 public interface RawComponentFactory {
 
-    RawComponent produceRawComponent();
+    RawComponent produceRawComponent(String robotId);
 }

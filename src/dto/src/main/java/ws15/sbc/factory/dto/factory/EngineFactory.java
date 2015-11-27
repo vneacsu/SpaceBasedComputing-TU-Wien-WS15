@@ -6,8 +6,8 @@ import ws15.sbc.factory.dto.RawComponent;
 public class EngineFactory implements RawComponentFactory {
 
     @Override
-    public RawComponent produceRawComponent() {
-        return new Engine();
+    public RawComponent produceRawComponent(String robotId) {
+        return new Engine(robotId);
     }
 
 }

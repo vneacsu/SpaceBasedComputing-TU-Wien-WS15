@@ -14,7 +14,7 @@ public class SupplyRobotTest {
     public void deliver3Rotors_shouldBeSuccessful() {
         RawComponentRepository rawComponentRepository = mock(RawComponentRepository.class);
 
-        new SupplyRobot(rawComponentRepository, rotorFactory, 3, 100L).run();
+        new SupplyRobot("", rawComponentRepository, rotorFactory, 3, 100L).run();
 
         verify(rawComponentRepository, times(3)).storeEntity(anyObject());
     }

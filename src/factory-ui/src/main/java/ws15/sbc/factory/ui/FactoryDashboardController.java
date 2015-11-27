@@ -74,5 +74,8 @@ public class FactoryDashboardController implements Initializable {
     private void registerInventoryChangeListeners() {
         rawComponentRepository.onEntityStored(component -> Platform.runLater(() -> observableRawComponents.add(component)));
         processedComponentRepository.onEntityStored(component -> Platform.runLater(() -> observableProcessedComponents.add(component)));
+
+        rawComponentRepository.onEntityTaken(component -> Platform.runLater(() -> observableRawComponents.remove(component)));
+        processedComponentRepository.onEntityTaken(component -> Platform.runLater(() -> observableProcessedComponents.remove(component)));
     }
 }
