@@ -13,11 +13,13 @@ import ws15.sbc.factory.common.repository.Repository;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.TRY_ONCE;
@@ -80,13 +82,18 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
     }
 
     @Override
-    public void storeEntities(Entity... components) {
-        log.info("Writing entities to container {}", getContainerName());
+    public void storeEntity(Entity entity) {
+        storeEntities(singletonList(entity));
+    }
 
-        Entry[] entries = asList(components).stream()
+    @Override
+    public void storeEntities(List<? extends Entity> entities) {
+        log.info("Writing entities {} to container {}", Arrays.toString(entities.toArray()), getContainerName());
+
+        Entry[] entries = entities.stream()
                 .map(Entry::new)
                 .collect(toList())
-                .toArray(new Entry[components.length]);
+                .toArray(new Entry[entities.size()]);
 
         try {
             capi.write(cref, DEFAULT, txManager.currentTransaction(), entries);
@@ -128,11 +135,9 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
 
     @Override
     public void onEntityStored(Consumer<Entity> consumer) {
-        NotificationListener notificationListener = (source, operation, entries) -> {
-            entries.stream()
-                    .map(e -> ((Entry) e).getValue())
-                    .forEach(e -> consumer.accept((Entity) e));
-        };
+        NotificationListener notificationListener = (source, operation, entries) -> entries.stream()
+                .map(e -> ((Entry) e).getValue())
+                .forEach(e -> consumer.accept((Entity) e));
 
         try {
             notificationManager.createNotification(cref, notificationListener, Operation.WRITE);
@@ -143,10 +148,8 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
 
     @Override
     public void onEntityTaken(Consumer<Entity> consumer) {
-        NotificationListener notificationListener = (source, operation, entries) -> {
-            entries.stream()
-                    .forEach(e -> consumer.accept((Entity) e));
-        };
+        NotificationListener notificationListener = (source, operation, entries) -> entries.stream()
+                .forEach(e -> consumer.accept((Entity) e));
 
         try {
             notificationManager.createNotification(cref, notificationListener, Operation.TAKE);

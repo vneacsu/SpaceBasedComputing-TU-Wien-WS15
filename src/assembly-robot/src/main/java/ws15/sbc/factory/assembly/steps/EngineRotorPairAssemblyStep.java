@@ -97,8 +97,7 @@ public class EngineRotorPairAssemblyStep implements AssemblyStep {
         log.info("Storing available engine rotor pairs for future use...");
 
         List<EngineRotorPair> availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
-        EngineRotorPair[] engineRotorPairs = availableEngineRotorPairs.toArray(new EngineRotorPair[availableEngineRotorPairs.size()]);
 
-        processedComponentRepository.storeEntities(engineRotorPairs);
+        processedComponentRepository.storeEntities(availableEngineRotorPairs);
     }
 }

@@ -8,7 +8,6 @@ import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.dto.Carcase;
 import ws15.sbc.factory.dto.Drone;
 import ws15.sbc.factory.dto.EngineRotorPair;
-import ws15.sbc.factory.dto.ProcessedComponent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -71,7 +70,7 @@ public class DroneAsemblyStep implements AssemblyStep {
 
         clearAvailableComponents();
 
-        droneRepository.storeEntities(drone);
+        droneRepository.storeEntity(drone);
     }
 
     private void clearAvailableComponents() {
@@ -83,15 +82,11 @@ public class DroneAsemblyStep implements AssemblyStep {
         log.info("Storing available engine rotor pairs and carcase in inventory, for future use");
 
         if (availableEngineRotorPairs.size() > 0) {
-            processedComponentRepository.storeEntities(availableEngineRotorPairsAsArray());
+            processedComponentRepository.storeEntities(availableEngineRotorPairs);
         }
 
-        availableCarcase.ifPresent(carcase -> processedComponentRepository.storeEntities(carcase));
+        availableCarcase.ifPresent(carcase -> processedComponentRepository.storeEntity(carcase));
 
         clearAvailableComponents();
-    }
-
-    private ProcessedComponent[] availableEngineRotorPairsAsArray() {
-        return availableEngineRotorPairs.toArray(new ProcessedComponent[availableEngineRotorPairs.size()]);
     }
 }

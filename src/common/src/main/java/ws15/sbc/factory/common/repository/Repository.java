@@ -7,7 +7,9 @@ import java.util.function.Consumer;
 
 public interface Repository<Entity extends Serializable> {
 
-    void storeEntities(Entity... entities);
+    void storeEntity(Entity entity);
+
+    void storeEntities(List<? extends Entity> entities);
 
     <T extends Entity> Optional<T> takeOne(Class<T> clazz);
 
