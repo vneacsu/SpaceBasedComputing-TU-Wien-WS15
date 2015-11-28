@@ -5,6 +5,6 @@ if [ "$#" -ne 3 ]; then
     exit 0
 fi
 
-export SUPPLY_ROBOT_OPTS="-DcomponentType=$1 -Dquantity=$2 -Dinterval=$3"
+export JAVA_OPTS="-DcomponentType=$1 -Dquantity=$2 -Dinterval=$3"
 
 ./src/supply-robot/build/install/supply-robot/bin/supply-robot

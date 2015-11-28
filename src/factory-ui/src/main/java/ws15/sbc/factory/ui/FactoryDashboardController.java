@@ -5,10 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.repository.DroneRepository;
-import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
-import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.common.repository.TxManager;
+import ws15.sbc.factory.common.repository.*;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -18,12 +15,12 @@ public class FactoryDashboardController implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(FactoryDashboardController.class);
 
-    @Inject
-    private RawComponentRepository rawComponentRepository;
-    @Inject
-    private ProcessedComponentRepository processedComponentRepository;
-    @Inject
-    private DroneRepository droneRepository;
+    @Inject private RawComponentRepository rawComponentRepository;
+    @Inject private ProcessedComponentRepository processedComponentRepository;
+    @Inject private DroneRepository droneRepository;
+    @Inject private CalibratedDroneRepository calibratedDroneRepository;
+    @Inject private GoodDroneRepository goodDroneRepository;
+    @Inject private BadDroneRepository badDroneRepository;
 
     @Inject
     private TxManager txManager;
@@ -47,6 +44,9 @@ public class FactoryDashboardController implements Initializable {
             model.getRawComponents().addAll(rawComponentRepository.readAll());
             model.getProcessedComponents().addAll(processedComponentRepository.readAll());
             model.getDrones().addAll(droneRepository.readAll());
+            model.getCalibratedDrones().addAll(calibratedDroneRepository.readAll());
+            model.getGoodDrones().addAll(goodDroneRepository.readAll());
+            model.getBadDrones().addAll(badDroneRepository.readAll());
         } catch (Exception e) {
             txManager.rollback();
             throw e;
@@ -64,5 +64,14 @@ public class FactoryDashboardController implements Initializable {
 
         droneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getDrones().add(drone))));
         droneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getDrones().remove(drone))));
+
+        calibratedDroneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getCalibratedDrones().add(drone))));
+        calibratedDroneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getCalibratedDrones().remove(drone))));
+
+        goodDroneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getGoodDrones().add(drone))));
+        goodDroneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getGoodDrones().remove(drone))));
+
+        badDroneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getBadDrones().add(drone))));
+        badDroneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getBadDrones().remove(drone))));
     }
 }
