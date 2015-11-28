@@ -6,9 +6,11 @@ import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
+import ws15.sbc.factory.common.utils.OperationUtils;
 import ws15.sbc.factory.dto.Engine;
 import ws15.sbc.factory.dto.EngineRotorPair;
 import ws15.sbc.factory.dto.Rotor;
+import ws15.sbc.factory.dto.UnCalibratedEngineRotorPair;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -88,9 +90,9 @@ public class EngineRotorPairAssemblyStep implements AssemblyStep {
             return Optional.empty();
         }
 
-        AssemblyOperationUtils.simulateAssemblyOperationDelay();
+        OperationUtils.simulateDelay(1000);
 
-        return Optional.of(new EngineRotorPair(robotId, engine.get(), rotor.get()));
+        return Optional.of(new UnCalibratedEngineRotorPair(robotId, engine.get(), rotor.get()));
     }
 
     private void storeEngineRotorPairsForFutureUse() {

@@ -6,5 +6,5 @@ import ws15.sbc.factory.dto.Drone;
 import javax.inject.Singleton;
 
 @Singleton
-public class XBasedDroneRepository extends BaseXBasedRepository<Drone> implements DroneRepository {
+public class XBasedDroneRepository extends GenericXBasedRepository<Drone> implements DroneRepository {
 }

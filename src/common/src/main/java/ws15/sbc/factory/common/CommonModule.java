@@ -8,14 +8,8 @@ import org.mozartspaces.notifications.NotificationManager;
 import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.app.impl.SpaceBasedAppManager;
 import ws15.sbc.factory.common.app.impl.XBasedAppManager;
-import ws15.sbc.factory.common.repository.DroneRepository;
-import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
-import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.common.repository.TxManager;
-import ws15.sbc.factory.common.repository.mzs.SpaceBasedDroneRepository;
-import ws15.sbc.factory.common.repository.mzs.SpaceBasedProcessedComponentRepository;
-import ws15.sbc.factory.common.repository.mzs.SpaceBasedRawComponentRepository;
-import ws15.sbc.factory.common.repository.mzs.SpaceBasedTxManager;
+import ws15.sbc.factory.common.repository.*;
+import ws15.sbc.factory.common.repository.mzs.*;
 import ws15.sbc.factory.common.repository.xbased.XBasedDroneRepository;
 import ws15.sbc.factory.common.repository.xbased.XBasedProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.xbased.XBasedRawComponentRepository;
@@ -32,6 +26,7 @@ public class CommonModule extends PrivateModule {
         expose(RawComponentRepository.class);
         expose(ProcessedComponentRepository.class);
         expose(DroneRepository.class);
+        expose(CalibratedDroneRepository.class);
         expose(TxManager.class);
 
         MzsCore core = DefaultMzsCore.newInstance();
@@ -61,6 +56,7 @@ public class CommonModule extends PrivateModule {
         bind(RawComponentRepository.class).to(SpaceBasedRawComponentRepository.class);
         bind(ProcessedComponentRepository.class).to(SpaceBasedProcessedComponentRepository.class);
         bind(DroneRepository.class).to(SpaceBasedDroneRepository.class);
+        bind(CalibratedDroneRepository.class).to(SpaceBasedCalibratedDroneRepository.class);
         bind(TxManager.class).to(SpaceBasedTxManager.class);
     }
 

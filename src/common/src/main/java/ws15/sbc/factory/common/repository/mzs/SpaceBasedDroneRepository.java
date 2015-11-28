@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import java.net.URI;
 
 @Singleton
-public class SpaceBasedDroneRepository extends BaseSpaceBasedRepository<Drone> implements DroneRepository {
+public class SpaceBasedDroneRepository extends GenericSpaceBasedRepository<Drone> implements DroneRepository {
 
     @Inject
     public SpaceBasedDroneRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {

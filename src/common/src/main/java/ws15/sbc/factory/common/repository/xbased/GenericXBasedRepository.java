@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public abstract class BaseXBasedRepository<Entity extends Serializable> implements Repository<Entity> {
+public abstract class GenericXBasedRepository<Entity extends Serializable> implements Repository<Entity> {
 
     @Override
     public void storeEntity(Entity components) {

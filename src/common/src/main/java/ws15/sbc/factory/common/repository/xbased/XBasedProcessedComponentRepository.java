@@ -6,5 +6,5 @@ import ws15.sbc.factory.dto.ProcessedComponent;
 import javax.inject.Singleton;
 
 @Singleton
-public class XBasedProcessedComponentRepository extends BaseXBasedRepository<ProcessedComponent> implements ProcessedComponentRepository {
+public class XBasedProcessedComponentRepository extends GenericXBasedRepository<ProcessedComponent> implements ProcessedComponentRepository {
 }

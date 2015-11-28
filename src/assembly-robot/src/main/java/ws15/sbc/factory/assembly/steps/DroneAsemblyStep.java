@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
+import ws15.sbc.factory.common.utils.OperationUtils;
 import ws15.sbc.factory.dto.Carcase;
 import ws15.sbc.factory.dto.Drone;
 import ws15.sbc.factory.dto.EngineRotorPair;
@@ -66,7 +67,7 @@ public class DroneAsemblyStep implements AssemblyStep {
         log.info("Assembling drone and storing it in inventory");
 
         Drone drone = new Drone(robotId, availableEngineRotorPairs, availableCarcase.get());
-        AssemblyOperationUtils.simulateAssemblyOperationDelay();
+        OperationUtils.simulateDelay(1000);
 
         clearAvailableComponents();
 

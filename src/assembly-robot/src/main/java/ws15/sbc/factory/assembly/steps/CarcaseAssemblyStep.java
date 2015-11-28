@@ -6,6 +6,7 @@ import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
+import ws15.sbc.factory.common.utils.OperationUtils;
 import ws15.sbc.factory.dto.Carcase;
 import ws15.sbc.factory.dto.Casing;
 import ws15.sbc.factory.dto.ControlUnit;
@@ -82,7 +83,7 @@ public class CarcaseAssemblyStep implements AssemblyStep {
             return Optional.empty();
         }
 
-        AssemblyOperationUtils.simulateAssemblyOperationDelay();
+        OperationUtils.simulateDelay(1000);
 
         return Optional.of(new Carcase(robotId, casing.get(), controlUnit.get()));
     }

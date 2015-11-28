@@ -6,5 +6,5 @@ import ws15.sbc.factory.dto.RawComponent;
 import javax.inject.Singleton;
 
 @Singleton
-public class XBasedRawComponentRepository extends BaseXBasedRepository<RawComponent> implements RawComponentRepository {
+public class XBasedRawComponentRepository extends GenericXBasedRepository<RawComponent> implements RawComponentRepository {
 }

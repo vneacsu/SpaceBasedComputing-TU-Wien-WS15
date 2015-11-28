@@ -24,9 +24,9 @@ import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.TRY_ONCE;
 
-public abstract class BaseSpaceBasedRepository<Entity extends Serializable> implements Repository<Entity> {
+public abstract class GenericSpaceBasedRepository<Entity extends Serializable> implements Repository<Entity> {
 
-    private static final Logger log = LoggerFactory.getLogger(BaseSpaceBasedRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(GenericSpaceBasedRepository.class);
 
     private static final int TAKE_TIMEOUT = 2 * 1000;
 
@@ -37,7 +37,7 @@ public abstract class BaseSpaceBasedRepository<Entity extends Serializable> impl
 
     private SpaceBasedTxManager txManager;
 
-    public BaseSpaceBasedRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {
+    public GenericSpaceBasedRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {
         this.space = space;
         this.txManager = txManager;
 

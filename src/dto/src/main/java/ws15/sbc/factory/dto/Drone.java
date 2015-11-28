@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Drone extends ProcessedComponent {
 
-    private final List<EngineRotorPair> engineRotorPairs;
+    private List<EngineRotorPair> engineRotorPairs;
     private final Carcase carcase;
 
     public Drone(String assembledBy, List<EngineRotorPair> engineRotorPairs, Carcase carcase) {
@@ -12,5 +12,21 @@ public class Drone extends ProcessedComponent {
 
         this.engineRotorPairs = engineRotorPairs;
         this.carcase = carcase;
+    }
+
+    public void setEngineRotorPairs(List<EngineRotorPair> engineRotorPairs) {
+        this.engineRotorPairs = engineRotorPairs;
+    }
+
+    public List<EngineRotorPair> getEngineRotorPairs() {
+        return engineRotorPairs;
+    }
+
+    public void setCalibrationSum(Integer calibrationSum) {
+        carcase.setCalibrationSum(calibrationSum);
+    }
+
+    public Integer getCalibrationSum() {
+        return carcase.getCalibrationSum();
     }
 }

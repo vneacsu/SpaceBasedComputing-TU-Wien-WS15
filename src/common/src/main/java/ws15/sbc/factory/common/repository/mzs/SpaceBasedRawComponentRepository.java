@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import java.net.URI;
 
 @Singleton
-public class SpaceBasedRawComponentRepository extends BaseSpaceBasedRepository<RawComponent> implements RawComponentRepository {
+public class SpaceBasedRawComponentRepository extends GenericSpaceBasedRepository<RawComponent> implements RawComponentRepository {
 
     @Inject
     public SpaceBasedRawComponentRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {

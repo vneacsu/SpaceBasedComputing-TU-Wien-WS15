@@ -8,6 +8,10 @@ public abstract class ProcessedComponent extends Component {
         this.assembledBy = assembledBy;
     }
 
+    public String getAssembledBy() {
+        return assembledBy;
+    }
+
     @Override
     public String toString() {
         return String.format("[%s: id - %s, assembledBy - %s]",

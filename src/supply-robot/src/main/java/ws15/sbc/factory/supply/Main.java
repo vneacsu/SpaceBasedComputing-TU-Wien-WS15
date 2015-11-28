@@ -22,9 +22,8 @@ public class Main {
     private static final Random randomizer = new Random();
 
     private final static List<String> rawComponentTypes = asList("casing", "control-unit", "engine", "rotor");
+    private final static List<RawComponentFactory> rawComponentFactories = asList(new CasingFactory(), new ControlUnitFactory(), new EngineFactory(), new RotorFactory());
 
-    private final static List<RawComponentFactory> rawComponentFactories =
-            asList(new CasingFactory(), new ControlUnitFactory(), new EngineFactory(), new RotorFactory());
     private final static Map<String, RawComponentFactory> rawComponentFactoryMap = new HashMap<>();
     static {
         for (int i = 0; i < rawComponentTypes.size(); ++i) {
@@ -33,8 +32,7 @@ public class Main {
     }
 
     private static final String robotId = getProperty("robotId").orElse("Supply Robot " + randomizer.nextInt(10000));
-    private static final String componentType = getProperty("componentType")
-            .orElse(rawComponentTypes.get(randomizer.nextInt(rawComponentTypes.size())));
+    private static final String componentType = getProperty("componentType").orElse(rawComponentTypes.get(randomizer.nextInt(rawComponentTypes.size())));
     private static final Integer quantity = parseInt(getProperty("quantity").orElse("" + (randomizer.nextInt(9) + 1)));
     private static final Long interval = parseLong(getProperty("interval").orElse("" + randomizer.nextInt(1000)));
 
