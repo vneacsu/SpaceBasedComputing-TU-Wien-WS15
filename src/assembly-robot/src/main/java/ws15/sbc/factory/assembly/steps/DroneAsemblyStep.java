@@ -3,12 +3,12 @@ package ws15.sbc.factory.assembly.steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
+import ws15.sbc.factory.common.dto.Carcase;
+import ws15.sbc.factory.common.dto.Drone;
+import ws15.sbc.factory.common.dto.EngineRotorPair;
 import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.utils.OperationUtils;
-import ws15.sbc.factory.dto.Carcase;
-import ws15.sbc.factory.dto.Drone;
-import ws15.sbc.factory.dto.EngineRotorPair;
 
 import javax.inject.Inject;
 import javax.inject.Named;

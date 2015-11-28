@@ -2,9 +2,9 @@ package ws15.sbc.factory.ui;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import ws15.sbc.factory.dto.Drone;
-import ws15.sbc.factory.dto.ProcessedComponent;
-import ws15.sbc.factory.dto.RawComponent;
+import ws15.sbc.factory.common.dto.Drone;
+import ws15.sbc.factory.common.dto.ProcessedComponent;
+import ws15.sbc.factory.common.dto.RawComponent;
 
 public class FactoryDashboardModel {
 

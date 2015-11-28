@@ -3,13 +3,13 @@ package ws15.sbc.factory.assembly.steps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
+import ws15.sbc.factory.common.dto.Carcase;
+import ws15.sbc.factory.common.dto.Casing;
+import ws15.sbc.factory.common.dto.ControlUnit;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
-import ws15.sbc.factory.dto.Carcase;
-import ws15.sbc.factory.dto.Casing;
-import ws15.sbc.factory.dto.ControlUnit;
 
 import javax.inject.Inject;
 import javax.inject.Named;

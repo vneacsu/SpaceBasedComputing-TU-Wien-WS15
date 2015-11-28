@@ -1,4 +1,4 @@
-package ws15.sbc.factory.dto;
+package ws15.sbc.factory.common.dto;
 
 import java.io.Serializable;
 import java.util.Objects;

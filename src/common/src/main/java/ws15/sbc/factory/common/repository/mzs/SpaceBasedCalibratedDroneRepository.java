@@ -2,8 +2,8 @@ package ws15.sbc.factory.common.repository.mzs;
 
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.notifications.NotificationManager;
+import ws15.sbc.factory.common.dto.Drone;
 import ws15.sbc.factory.common.repository.CalibratedDroneRepository;
-import ws15.sbc.factory.dto.Drone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

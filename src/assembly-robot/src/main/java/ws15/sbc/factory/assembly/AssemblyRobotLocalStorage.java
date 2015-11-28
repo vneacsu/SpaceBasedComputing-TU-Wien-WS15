@@ -3,8 +3,8 @@ package ws15.sbc.factory.assembly;
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.dto.Carcase;
-import ws15.sbc.factory.dto.EngineRotorPair;
+import ws15.sbc.factory.common.dto.Carcase;
+import ws15.sbc.factory.common.dto.EngineRotorPair;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;

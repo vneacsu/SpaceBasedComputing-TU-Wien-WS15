@@ -2,14 +2,14 @@ package ws15.sbc.factory.calibrate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.dto.Drone;
+import ws15.sbc.factory.common.dto.EngineRotorPair;
+import ws15.sbc.factory.common.dto.UnCalibratedEngineRotorPair;
 import ws15.sbc.factory.common.repository.CalibratedDroneRepository;
 import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
-import ws15.sbc.factory.dto.Drone;
-import ws15.sbc.factory.dto.EngineRotorPair;
-import ws15.sbc.factory.dto.UnCalibratedEngineRotorPair;
 
 import javax.inject.Inject;
 import java.util.List;

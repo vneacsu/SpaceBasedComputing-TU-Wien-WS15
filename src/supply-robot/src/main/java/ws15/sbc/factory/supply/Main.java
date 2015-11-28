@@ -4,8 +4,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import ws15.sbc.factory.common.CommonModule;
 import ws15.sbc.factory.common.app.AppManager;
+import ws15.sbc.factory.common.dto.factory.*;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.dto.factory.*;
 
 import java.util.HashMap;
 import java.util.List;

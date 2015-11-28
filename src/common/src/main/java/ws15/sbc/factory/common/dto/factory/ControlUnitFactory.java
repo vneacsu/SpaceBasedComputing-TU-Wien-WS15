@@ -1,7 +1,7 @@
-package ws15.sbc.factory.dto.factory;
+package ws15.sbc.factory.common.dto.factory;
 
-import ws15.sbc.factory.dto.ControlUnit;
-import ws15.sbc.factory.dto.RawComponent;
+import ws15.sbc.factory.common.dto.ControlUnit;
+import ws15.sbc.factory.common.dto.RawComponent;
 
 public class ControlUnitFactory implements RawComponentFactory {
 

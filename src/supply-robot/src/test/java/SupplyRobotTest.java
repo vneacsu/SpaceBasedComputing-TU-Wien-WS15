@@ -1,7 +1,7 @@
 import org.junit.Test;
+import ws15.sbc.factory.common.dto.factory.RawComponentFactory;
+import ws15.sbc.factory.common.dto.factory.RotorFactory;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.dto.factory.RawComponentFactory;
-import ws15.sbc.factory.dto.factory.RotorFactory;
 import ws15.sbc.factory.supply.SupplyRobot;
 
 import static org.mockito.Mockito.*;

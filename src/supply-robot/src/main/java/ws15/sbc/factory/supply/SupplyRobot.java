@@ -2,10 +2,10 @@ package ws15.sbc.factory.supply;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.dto.RawComponent;
+import ws15.sbc.factory.common.dto.factory.RawComponentFactory;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
 import ws15.sbc.factory.common.repository.mzs.SpaceBasedRawComponentRepository;
-import ws15.sbc.factory.dto.RawComponent;
-import ws15.sbc.factory.dto.factory.RawComponentFactory;
 
 public class SupplyRobot {
 

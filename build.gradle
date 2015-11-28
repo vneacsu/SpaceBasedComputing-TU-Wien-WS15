@@ -18,17 +18,16 @@ subprojects {
     }
 }
 
-configure(subprojects - project(':dto')) {
+configure(subprojects) {
     repositories { maven { url 'http://www.mozartspaces.org/maven-snapshots' } }
 
     dependencies {
         compile "org.mozartspaces:mozartspaces-runtime:$mozartspacesVersion"
         compile "org.mozartspaces:mozartspaces-notifications:$mozartspacesVersion"
-        compile project(':dto')
     }
 }
 
-configure(subprojects - project(':common') - project(':dto')) {
+configure(subprojects - project(':common')) {
     dependencies {
         compile project(':common')
     }

@@ -1,7 +1,7 @@
 package ws15.sbc.factory.common.repository.xbased;
 
+import ws15.sbc.factory.common.dto.Drone;
 import ws15.sbc.factory.common.repository.CalibratedDroneRepository;
-import ws15.sbc.factory.dto.Drone;
 
 import javax.inject.Singleton;
 
