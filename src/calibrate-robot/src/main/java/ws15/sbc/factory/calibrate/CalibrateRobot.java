@@ -66,7 +66,7 @@ public class CalibrateRobot {
             OperationUtils.simulateDelay(1000);
 
             processedComponentRepo.storeEntity(calibrated);
-            log.info("Engine-rotor pair have been calibrated and stored");
+            log.info("Engine-rotor pair has been calibrated and stored");
         } else {
             log.info("No engine-rotor pair found");
         }
@@ -83,7 +83,7 @@ public class CalibrateRobot {
             Drone drone = opDrone.get();
             calibrateDrone(drone);
             calibratedDroneRepo.storeEntity(drone);
-            log.info("Drone have been calibrated and stored");
+            log.info("Drone has been calibrated and stored");
         } else {
             log.info("No drone found");
         }
@@ -102,6 +102,9 @@ public class CalibrateRobot {
         }).collect(Collectors.toList());
 
         drone.setEngineRotorPairs(engineRotors);
+
+        Integer sum = engineRotors.stream().mapToInt(EngineRotorPair::getCalibrationValue).sum();
+        drone.setCalibrationSum(sum);
     }
 
     public void stop() {

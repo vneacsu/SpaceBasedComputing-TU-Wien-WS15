@@ -13,10 +13,7 @@ import ws15.sbc.factory.common.app.impl.SpaceBasedAppManager;
 import ws15.sbc.factory.common.app.impl.XBasedAppManager;
 import ws15.sbc.factory.common.repository.*;
 import ws15.sbc.factory.common.repository.mzs.*;
-import ws15.sbc.factory.common.repository.xbased.XBasedDroneRepository;
-import ws15.sbc.factory.common.repository.xbased.XBasedProcessedComponentRepository;
-import ws15.sbc.factory.common.repository.xbased.XBasedRawComponentRepository;
-import ws15.sbc.factory.common.repository.xbased.XBasedTxManager;
+import ws15.sbc.factory.common.repository.xbased.*;
 import ws15.sbc.factory.common.utils.PropertyUtils;
 
 import java.io.IOException;
@@ -32,6 +29,8 @@ public class CommonModule extends PrivateModule {
         expose(ProcessedComponentRepository.class);
         expose(DroneRepository.class);
         expose(CalibratedDroneRepository.class);
+        expose(GoodDroneRepository.class);
+        expose(BadDroneRepository.class);
         expose(TxManager.class);
 
         final String repoStrategy = PropertyUtils.getProperty("repoStrategy").orElse("spaceBased");
@@ -62,6 +61,8 @@ public class CommonModule extends PrivateModule {
         bind(ProcessedComponentRepository.class).to(SpaceBasedProcessedComponentRepository.class);
         bind(DroneRepository.class).to(SpaceBasedDroneRepository.class);
         bind(CalibratedDroneRepository.class).to(SpaceBasedCalibratedDroneRepository.class);
+        bind(GoodDroneRepository.class).to(SpaceBasedGoodDroneRepository.class);
+        bind(BadDroneRepository.class).to(SpaceBasedBadDroneRepository.class);
         bind(TxManager.class).to(SpaceBasedTxManager.class);
     }
 
@@ -80,6 +81,9 @@ public class CommonModule extends PrivateModule {
         bind(RawComponentRepository.class).to(XBasedRawComponentRepository.class);
         bind(ProcessedComponentRepository.class).to(XBasedProcessedComponentRepository.class);
         bind(DroneRepository.class).to(XBasedDroneRepository.class);
+        bind(CalibratedDroneRepository.class).to(XBasedCalibratedDroneRepository.class);
+        bind(GoodDroneRepository.class).to(XBasedGoodDroneRepository.class);
+        bind(BadDroneRepository.class).to(XBasedBadDroneRepository.class);
         bind(TxManager.class).to(XBasedTxManager.class);
     }
 }
