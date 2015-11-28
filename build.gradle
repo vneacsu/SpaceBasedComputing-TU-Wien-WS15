@@ -24,6 +24,7 @@ configure(subprojects) {
     dependencies {
         compile "org.mozartspaces:mozartspaces-runtime:$mozartspacesVersion"
         compile "org.mozartspaces:mozartspaces-notifications:$mozartspacesVersion"
+        compile 'com.rabbitmq:amqp-client:3.5.6'
     }
 }
 

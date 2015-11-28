@@ -17,32 +17,30 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
     </rowConstraints>
-    <children>
-        <BorderPane prefHeight="200.0" prefWidth="200.0">
-            <center>
-                <ListView items="${model.rawComponents}" prefHeight="200.0" prefWidth="200.0"
-                          BorderPane.alignment="CENTER"/>
-            </center>
-            <top>
-                <Label text="Raw components inventory" BorderPane.alignment="CENTER"/>
-            </top>
-        </BorderPane>
-        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
-            <top>
-                <Label text="Processed components inventory" BorderPane.alignment="CENTER"/>
-            </top>
-            <center>
-                <ListView items="${model.processedComponents}" prefHeight="200.0" prefWidth="200.0"
-                          BorderPane.alignment="CENTER"/>
-            </center>
-        </BorderPane>
-        <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
-            <top>
-                <Label text="Drones inventory" BorderPane.alignment="CENTER"/>
-            </top>
-            <center>
-                <ListView items="${model.drones}" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
-            </center>
-        </BorderPane>
-    </children>
+    <BorderPane prefHeight="200.0" prefWidth="200.0">
+        <center>
+            <ListView items="${model.rawComponents}" prefHeight="200.0" prefWidth="200.0"
+                      BorderPane.alignment="CENTER"/>
+        </center>
+        <top>
+            <Label text="Raw components inventory" BorderPane.alignment="CENTER"/>
+        </top>
+    </BorderPane>
+    <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
+        <top>
+            <Label text="Processed components inventory" BorderPane.alignment="CENTER"/>
+        </top>
+        <center>
+            <ListView items="${model.processedComponents}" prefHeight="200.0" prefWidth="200.0"
+                      BorderPane.alignment="CENTER"/>
+        </center>
+    </BorderPane>
+    <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+        <top>
+            <Label text="Drones inventory" BorderPane.alignment="CENTER"/>
+        </top>
+        <center>
+            <ListView items="${model.drones}" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+        </center>
+    </BorderPane>
 </GridPane>

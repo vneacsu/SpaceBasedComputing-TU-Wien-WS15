@@ -1,6 +1,9 @@
 package ws15.sbc.factory.common;
 
 import com.google.inject.PrivateModule;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.DefaultMzsCore;
 import org.mozartspaces.core.MzsCore;
@@ -16,7 +19,9 @@ import ws15.sbc.factory.common.repository.xbased.XBasedRawComponentRepository;
 import ws15.sbc.factory.common.repository.xbased.XBasedTxManager;
 import ws15.sbc.factory.common.utils.PropertyUtils;
 
+import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.TimeoutException;
 
 public class CommonModule extends PrivateModule {
 
@@ -28,14 +33,6 @@ public class CommonModule extends PrivateModule {
         expose(DroneRepository.class);
         expose(CalibratedDroneRepository.class);
         expose(TxManager.class);
-
-        MzsCore core = DefaultMzsCore.newInstance();
-
-        bind(MzsCore.class).toInstance(core);
-        bind(Capi.class).toInstance(new Capi(core));
-        bind(NotificationManager.class).toInstance(new NotificationManager(core));
-
-        bind(URI.class).toInstance(URI.create("xvsm://localhost:4242"));
 
         final String repoStrategy = PropertyUtils.getProperty("repoStrategy").orElse("spaceBased");
 
@@ -52,6 +49,14 @@ public class CommonModule extends PrivateModule {
     }
 
     private void bindSpaceBased() {
+        MzsCore core = DefaultMzsCore.newInstance();
+
+        bind(MzsCore.class).toInstance(core);
+        bind(Capi.class).toInstance(new Capi(core));
+        bind(NotificationManager.class).toInstance(new NotificationManager(core));
+
+        bind(URI.class).toInstance(URI.create("xvsm://localhost:4242"));
+
         bind(AppManager.class).to(SpaceBasedAppManager.class);
         bind(RawComponentRepository.class).to(SpaceBasedRawComponentRepository.class);
         bind(ProcessedComponentRepository.class).to(SpaceBasedProcessedComponentRepository.class);
@@ -61,6 +66,16 @@ public class CommonModule extends PrivateModule {
     }
 
     private void bindXBased() {
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        try {
+            Connection connection = connectionFactory.newConnection();
+
+            bind(Connection.class).toInstance(connection);
+            bind(Channel.class).toInstance(connection.createChannel());
+        } catch (IOException | TimeoutException e) {
+            throw new RuntimeException(e);
+        }
+
         bind(AppManager.class).to(XBasedAppManager.class);
         bind(RawComponentRepository.class).to(XBasedRawComponentRepository.class);
         bind(ProcessedComponentRepository.class).to(XBasedProcessedComponentRepository.class);
