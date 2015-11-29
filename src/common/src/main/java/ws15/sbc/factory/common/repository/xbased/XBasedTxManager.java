@@ -1,29 +1,47 @@
 package ws15.sbc.factory.common.repository.xbased;
 
-import org.mozartspaces.core.TransactionReference;
+import com.rabbitmq.client.Channel;
 import ws15.sbc.factory.common.repository.TxManager;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.io.IOException;
 
 @Singleton
-public class XBasedTxManager implements TxManager<TransactionReference> {
+public class XBasedTxManager implements TxManager {
+
+    @Inject
+    private Channel channel;
+
     @Override
     public void beginTransaction() {
-        throw new UnsupportedOperationException();
+        try {
+            channel.txSelect();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void commit() {
-        throw new UnsupportedOperationException();
+        try {
+            channel.txCommit();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void rollback() {
-        throw new UnsupportedOperationException();
+        try {
+            channel.txRollback();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public TransactionReference currentTransaction() {
+    public Object currentTransaction() {
         return null;
     }
 }
