@@ -22,9 +22,6 @@ public class FactoryDashboardController implements Initializable {
     @Inject private GoodDroneRepository goodDroneRepository;
     @Inject private BadDroneRepository badDroneRepository;
 
-    @Inject
-    private TxManager txManager;
-
     @FXML
     private FactoryDashboardModel model;
 
@@ -32,27 +29,7 @@ public class FactoryDashboardController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         log.info("Initializing factory dashboard controller");
 
-        synchronizeCurrentInventoryState();
-
         registerInventoryChangeListeners();
-    }
-
-    private void synchronizeCurrentInventoryState() {
-        txManager.beginTransaction();
-
-        try {
-            model.getRawComponents().addAll(rawComponentRepository.readAll());
-            model.getProcessedComponents().addAll(processedComponentRepository.readAll());
-            model.getDrones().addAll(droneRepository.readAll());
-            model.getCalibratedDrones().addAll(calibratedDroneRepository.readAll());
-            model.getGoodDrones().addAll(goodDroneRepository.readAll());
-            model.getBadDrones().addAll(badDroneRepository.readAll());
-        } catch (Exception e) {
-            txManager.rollback();
-            throw e;
-        } finally {
-            txManager.commit();
-        }
     }
 
     private void registerInventoryChangeListeners() {

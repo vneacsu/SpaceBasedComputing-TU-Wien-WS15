@@ -124,11 +124,6 @@ public class XBasedRawComponentRepository implements RawComponentRepository {
     }
 
     @Override
-    public List<RawComponent> readAll() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void onEntityStored(Consumer<RawComponent> consumer) {
         log.info("Registering listener for raw component stored events");
 

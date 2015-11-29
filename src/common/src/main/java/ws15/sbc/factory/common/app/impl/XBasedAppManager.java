@@ -22,6 +22,11 @@ public class XBasedAppManager implements AppManager {
     private Connection connection;
 
     @Override
+    public void prepareInfrastructure() {
+        //nothing to do here
+    }
+
+    @Override
     public void shutdown() {
         log.info("Shutting application down");
 

@@ -1,9 +1,11 @@
 package ws15.sbc.factory.common.repository.mzs;
 
-import org.mozartspaces.capi3.*;
+import org.mozartspaces.capi3.AnyCoordinator;
+import org.mozartspaces.capi3.Coordinator;
+import org.mozartspaces.capi3.CountNotMetException;
+import org.mozartspaces.capi3.TypeCoordinator;
 import org.mozartspaces.core.*;
 import org.mozartspaces.core.MzsConstants.Container;
-import org.mozartspaces.core.MzsConstants.Selecting;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
@@ -22,7 +24,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
-import static org.mozartspaces.core.MzsConstants.RequestTimeout.TRY_ONCE;
 
 public abstract class GenericSpaceBasedRepository<Entity extends Serializable> implements Repository<Entity> {
 
@@ -119,28 +120,17 @@ public abstract class GenericSpaceBasedRepository<Entity extends Serializable> i
     }
 
     @Override
-    public List<Entity> readAll() {
-        log.info("Reading all entities from container {}", getContainerName());
-
-        try {
-            capi.lockContainer(cref, txManager.currentTransaction());
-
-            Selector selector = AnyCoordinator.newSelector(Selecting.COUNT_ALL);
-
-            return capi.read(cref, selector, TRY_ONCE, txManager.currentTransaction());
-        } catch (MzsCoreException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
     public void onEntityStored(Consumer<Entity> consumer) {
         NotificationListener notificationListener = (source, operation, entries) -> entries.stream()
                 .map(e -> ((Entry) e).getValue())
                 .forEach(e -> consumer.accept((Entity) e));
 
+        createNotificationFor(Operation.WRITE, notificationListener);
+    }
+
+    private void createNotificationFor(Operation operation, NotificationListener listener) {
         try {
-            notificationManager.createNotification(cref, notificationListener, Operation.WRITE);
+            notificationManager.createNotification(cref, listener, operation);
         } catch (MzsCoreException | InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -151,10 +141,6 @@ public abstract class GenericSpaceBasedRepository<Entity extends Serializable> i
         NotificationListener notificationListener = (source, operation, entries) -> entries.stream()
                 .forEach(e -> consumer.accept((Entity) e));
 
-        try {
-            notificationManager.createNotification(cref, notificationListener, Operation.TAKE);
-        } catch (MzsCoreException | InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        createNotificationFor(Operation.TAKE, notificationListener);
     }
 }

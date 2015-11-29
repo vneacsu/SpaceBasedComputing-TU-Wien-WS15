@@ -25,11 +25,6 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
     }
 
     @Override
-    public List<Entity> readAll() {
-        throw new UnsupportedOperationException(); // follows later
-    }
-
-    @Override
     public void onEntityStored(Consumer<Entity> consumer) {
         throw new UnsupportedOperationException(); // follows later
     }

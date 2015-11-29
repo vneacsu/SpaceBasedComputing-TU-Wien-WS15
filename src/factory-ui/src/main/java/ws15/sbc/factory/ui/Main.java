@@ -17,6 +17,12 @@ public class Main extends Application {
 
     private final Injector injector = Guice.createInjector(new CommonModule());
 
+    private final AppManager appManager = injector.getInstance(AppManager.class);
+
+    public Main() {
+        appManager.prepareInfrastructure();
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/factory-dashboard.fxml"));
@@ -33,7 +39,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        injector.getInstance(AppManager.class).shutdown();
+        appManager.shutdown();
     }
 
 

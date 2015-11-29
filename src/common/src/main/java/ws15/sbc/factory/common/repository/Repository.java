@@ -13,8 +13,6 @@ public interface Repository<Entity extends Serializable> {
 
     <T extends Entity> Optional<T> takeOne(Class<T> clazz);
 
-    List<Entity> readAll();
-
     void onEntityStored(Consumer<Entity> consumer);
 
     void onEntityTaken(Consumer<Entity> consumer);
