@@ -26,6 +26,10 @@ public class Drone extends ProcessedComponent {
         carcase.setCalibrationSum(calibrationSum);
     }
 
+    public Carcase getCarcase() {
+        return carcase;
+    }
+
     public Integer getCalibrationSum() {
         return carcase.getCalibrationSum();
     }

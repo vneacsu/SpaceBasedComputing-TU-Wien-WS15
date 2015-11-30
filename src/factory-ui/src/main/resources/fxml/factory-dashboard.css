@@ -1,0 +1,14 @@
+.h1 {
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 8px;
+}
+
+.description-tag {
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+}
+
+.separation-tag {
+    -fx-padding: 16px 0 0 0;
+}

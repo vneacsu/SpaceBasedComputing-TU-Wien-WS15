@@ -17,6 +17,14 @@ public class Carcase extends ProcessedComponent {
         this.calibrationSum = calibrationSum;
     }
 
+    public Casing getCasing() {
+        return casing;
+    }
+
+    public ControlUnit getControlUnit() {
+        return controlUnit;
+    }
+
     public Integer getCalibrationSum() {
         return calibrationSum;
     }

@@ -13,4 +13,8 @@ public abstract class RawComponent extends Component {
         return String.format("[%s: id - %s, suppliedBy - %s]",
                 this.getClass().getSimpleName(), getId(), suppliedBy);
     }
+
+    public String getSuppliedBy() {
+        return suppliedBy;
+    }
 }

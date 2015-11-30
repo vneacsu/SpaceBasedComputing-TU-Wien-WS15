@@ -30,6 +30,8 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
 
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("/fxml/factory-dashboard.css");
+        stage.setMaximized(true);
         stage.setScene(scene);
 
         stage.setTitle("Drone factory");

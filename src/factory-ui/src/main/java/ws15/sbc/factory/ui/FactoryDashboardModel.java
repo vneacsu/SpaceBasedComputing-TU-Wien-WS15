@@ -14,6 +14,7 @@ public class FactoryDashboardModel {
     private final ObservableList<Drone> calibratedDrones = FXCollections.observableArrayList();
     private final ObservableList<Drone> goodDrones = FXCollections.observableArrayList();
     private final ObservableList<Drone> badDrones = FXCollections.observableArrayList();
+    private final Drone selectedDrone = null;
 
     public ObservableList<RawComponent> getRawComponents() {
         return rawComponents;
@@ -37,5 +38,9 @@ public class FactoryDashboardModel {
 
     public ObservableList<Drone> getBadDrones() {
         return badDrones;
+    }
+
+    public Drone getSelectedDrone() {
+        return selectedDrone;
     }
 }
