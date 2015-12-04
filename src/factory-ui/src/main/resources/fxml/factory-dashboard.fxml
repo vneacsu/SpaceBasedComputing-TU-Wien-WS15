@@ -86,9 +86,6 @@
                     <Label styleClass="description-tag" text="ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
                     <Label text="${model.selectedDrone.id}" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-                    <Label styleClass="description-tag" text="Status:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                    <Label text="${model.selectedDrone.status}" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
                     <Label styleClass="description-tag" text="Assembled by:" GridPane.rowIndex="2"
                            GridPane.columnIndex="0"/>
                     <Label text="${model.selectedDrone.assembledBy}" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
