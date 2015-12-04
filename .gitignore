@@ -2,5 +2,4 @@
 .gradle
 *.iml
 build
-samples
-infra/*.jar
+*.log
