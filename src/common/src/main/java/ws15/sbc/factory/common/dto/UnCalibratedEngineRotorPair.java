@@ -16,7 +16,7 @@ public class UnCalibratedEngineRotorPair extends EngineRotorPair {
     public EngineRotorPair calibrate(String calibratedBy) {
         Integer calibrationValue = random.nextInt(21) - 10;
 
-        return new CalibratedEngineRotorPair(getAssembledBy(), getEngine(), getRotor(), calibrationValue);
+        return new CalibratedEngineRotorPair(getAssembledBy(), getEngine(), getRotor(), calibrationValue, calibratedBy);
     }
 
     @Override

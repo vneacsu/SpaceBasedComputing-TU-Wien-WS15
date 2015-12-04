@@ -5,10 +5,12 @@ public class CalibratedEngineRotorPair extends EngineRotorPair {
     public CalibratedEngineRotorPair(String assembledBy,
                                      Engine engine,
                                      Rotor rotor,
-                                     Integer calibrationValue) {
+                                     Integer calibrationValue,
+                                     String calibratedBy) {
 
         super(assembledBy, engine, rotor);
         setCalibrationValue(calibrationValue);
+        setCalibratedBy(calibratedBy);
     }
 
     @Override

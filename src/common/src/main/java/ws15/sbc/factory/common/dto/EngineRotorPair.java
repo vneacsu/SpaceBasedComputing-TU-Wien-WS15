@@ -30,6 +30,10 @@ public abstract class EngineRotorPair extends ProcessedComponent {
         return calibrationValue;
     }
 
+    public void setCalibratedBy(String calibratedBy) {
+        this.calibratedBy = calibratedBy;
+    }
+
     public String getCalibratedBy() {
         return calibratedBy;
     }
