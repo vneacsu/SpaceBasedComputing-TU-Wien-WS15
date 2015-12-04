@@ -1,5 +1,7 @@
 package ws15.sbc.factory.ui;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import ws15.sbc.factory.common.dto.Drone;
@@ -14,7 +16,7 @@ public class FactoryDashboardModel {
     private final ObservableList<Drone> calibratedDrones = FXCollections.observableArrayList();
     private final ObservableList<Drone> goodDrones = FXCollections.observableArrayList();
     private final ObservableList<Drone> badDrones = FXCollections.observableArrayList();
-    private final Drone selectedDrone = null;
+    private final ObjectProperty<Drone> selectedDrone = new SimpleObjectProperty<>();
 
     public ObservableList<RawComponent> getRawComponents() {
         return rawComponents;
@@ -41,6 +43,10 @@ public class FactoryDashboardModel {
     }
 
     public Drone getSelectedDrone() {
+        return selectedDrone.get();
+    }
+
+    public ObjectProperty<Drone> selectedDroneProperty() {
         return selectedDrone;
     }
 }

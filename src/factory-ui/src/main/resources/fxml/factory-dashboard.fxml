@@ -44,7 +44,8 @@
             <Label styleClass="h1" text="Drones inventory" BorderPane.alignment="CENTER"/>
         </top>
         <center>
-            <ListView items="${model.drones}" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+            <ListView fx:id="assembledDronesListView" items="${model.drones}" prefHeight="200.0" prefWidth="200.0"
+                      BorderPane.alignment="CENTER"/>
         </center>
     </BorderPane>
     <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" GridPane.columnIndex="0">
@@ -52,7 +53,8 @@
             <Label styleClass="h1" text="Calibrated drones inventory" BorderPane.alignment="CENTER"/>
         </top>
         <center>
-            <ListView items="${model.calibratedDrones}" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+            <ListView fx:id="calibratedDronesListView" items="${model.calibratedDrones}" prefHeight="200.0"
+                      prefWidth="200.0" BorderPane.alignment="CENTER"/>
         </center>
     </BorderPane>
     <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" GridPane.columnIndex="1">
@@ -60,7 +62,8 @@
             <Label styleClass="h1" text="Functional drones inventory" BorderPane.alignment="CENTER"/>
         </top>
         <center>
-            <ListView items="${model.goodDrones}" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+            <ListView fx:id="goodDronesListView" items="${model.goodDrones}" prefHeight="200.0" prefWidth="200.0"
+                      BorderPane.alignment="CENTER"/>
         </center>
     </BorderPane>
     <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" GridPane.columnIndex="2">
@@ -68,7 +71,8 @@
             <Label styleClass="h1" text="Faulty drones inventory" BorderPane.alignment="CENTER"/>
         </top>
         <center>
-            <ListView items="${model.badDrones}" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+            <ListView fx:id="badDronesListView" items="${model.badDrones}" prefHeight="200.0" prefWidth="200.0"
+                      BorderPane.alignment="CENTER"/>
         </center>
     </BorderPane>
     <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="0" GridPane.columnIndex="3" GridPane.rowSpan="2"
