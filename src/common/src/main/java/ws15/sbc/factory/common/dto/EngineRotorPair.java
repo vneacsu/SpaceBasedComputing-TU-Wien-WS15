@@ -5,6 +5,7 @@ public abstract class EngineRotorPair extends ProcessedComponent {
     private final Engine engine;
     private final Rotor rotor;
     private Integer calibrationValue = null;
+    private String calibratedBy = null;
 
     public EngineRotorPair(String assembledBy, Engine engine, Rotor rotor) {
         super(assembledBy);
@@ -29,7 +30,11 @@ public abstract class EngineRotorPair extends ProcessedComponent {
         return calibrationValue;
     }
 
+    public String getCalibratedBy() {
+        return calibratedBy;
+    }
+
     abstract public boolean isCalibrated();
 
-    abstract public EngineRotorPair calibrate();
+    abstract public EngineRotorPair calibrate(String calibratedBy);
 }

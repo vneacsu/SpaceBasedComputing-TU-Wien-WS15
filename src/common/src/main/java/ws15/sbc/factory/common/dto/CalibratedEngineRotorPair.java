@@ -17,7 +17,7 @@ public class CalibratedEngineRotorPair extends EngineRotorPair {
     }
 
     @Override
-    public EngineRotorPair calibrate() {
+    public EngineRotorPair calibrate(String calibratedBy) {
         throw new IllegalStateException("Engine-rotor pair already calibrated");
     }
 }

@@ -8,6 +8,7 @@ import ws15.sbc.factory.common.repository.CalibratedDroneRepository;
 import ws15.sbc.factory.common.repository.GoodDroneRepository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
+import ws15.sbc.factory.common.utils.PropertyUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,7 +32,7 @@ public class LogisticsRobot {
     @Inject private TxManager txManager;
 
     public LogisticsRobot() {
-        this.robotId = UUID.randomUUID().toString();
+        this.robotId = PropertyUtils.getProperty("robotId").orElse(UUID.randomUUID().toString());
     }
 
     public void run() {
@@ -45,6 +46,8 @@ public class LogisticsRobot {
                 Drone drone = opDrone.get();
 
                 log.info("Found drone with calibration value {}", drone.getCalibrationSum());
+
+                drone.setTestedBy(robotId);
                 if (isInAdmissibleRange(drone)) {
                     goodDroneRepo.storeEntity(drone);
                     log.info("Drone has been moved to the logistics container");

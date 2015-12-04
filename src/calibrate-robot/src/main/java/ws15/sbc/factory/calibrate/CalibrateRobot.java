@@ -10,6 +10,7 @@ import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
+import ws15.sbc.factory.common.utils.PropertyUtils;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -41,7 +42,7 @@ public class CalibrateRobot {
     private TxManager txManager;
 
     public CalibrateRobot() {
-        robotId = UUID.randomUUID().toString();
+        robotId = PropertyUtils.getProperty("robotId").orElse(UUID.randomUUID().toString());
     }
 
     public void run() {
@@ -62,7 +63,7 @@ public class CalibrateRobot {
         if (opEngineRotorPair.isPresent()) {
             UnCalibratedEngineRotorPair uncalibrated = opEngineRotorPair.get();
 
-            EngineRotorPair calibrated = uncalibrated.calibrate();
+            EngineRotorPair calibrated = uncalibrated.calibrate(robotId);
             OperationUtils.simulateDelay(1000);
 
             processedComponentRepo.storeEntity(calibrated);
@@ -97,14 +98,14 @@ public class CalibrateRobot {
                 return e;
             } else {
                 OperationUtils.simulateDelay(1000);
-                return e.calibrate();
+                return e.calibrate(robotId);
             }
         }).collect(Collectors.toList());
 
         drone.setEngineRotorPairs(engineRotors);
 
         Integer sum = engineRotors.stream().mapToInt(EngineRotorPair::getCalibrationValue).sum();
-        drone.setCalibrationSum(sum);
+        drone.calibrate(sum, robotId);
     }
 
     public void stop() {

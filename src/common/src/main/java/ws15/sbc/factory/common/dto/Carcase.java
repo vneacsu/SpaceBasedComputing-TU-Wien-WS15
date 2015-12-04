@@ -5,6 +5,7 @@ public class Carcase extends ProcessedComponent {
     private final Casing casing;
     private final ControlUnit controlUnit;
     private Integer calibrationSum = null;
+    private String calibratedBy = null;
 
     public Carcase(String assembledBy, Casing casing, ControlUnit controlUnit) {
         super(assembledBy);
@@ -27,5 +28,13 @@ public class Carcase extends ProcessedComponent {
 
     public Integer getCalibrationSum() {
         return calibrationSum;
+    }
+
+    public String getCalibratedBy() {
+        return calibratedBy;
+    }
+
+    public void setCalibratedBy(String calibratedBy) {
+        this.calibratedBy = calibratedBy;
     }
 }

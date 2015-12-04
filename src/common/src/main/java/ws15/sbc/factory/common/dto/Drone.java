@@ -6,6 +6,7 @@ public class Drone extends ProcessedComponent {
 
     private List<EngineRotorPair> engineRotorPairs;
     private final Carcase carcase;
+    private String testedBy;
 
     public Drone(String assembledBy, List<EngineRotorPair> engineRotorPairs, Carcase carcase) {
         super(assembledBy);
@@ -22,8 +23,9 @@ public class Drone extends ProcessedComponent {
         return engineRotorPairs;
     }
 
-    public void setCalibrationSum(Integer calibrationSum) {
+    public void calibrate(Integer calibrationSum, String calibratedBy) {
         carcase.setCalibrationSum(calibrationSum);
+        carcase.setCalibratedBy(calibratedBy);
     }
 
     public Carcase getCarcase() {
@@ -32,5 +34,13 @@ public class Drone extends ProcessedComponent {
 
     public Integer getCalibrationSum() {
         return carcase.getCalibrationSum();
+    }
+
+    public void setTestedBy(String testedBy) {
+        this.testedBy = testedBy;
+    }
+
+    public String getTestedBy() {
+        return testedBy;
     }
 }
