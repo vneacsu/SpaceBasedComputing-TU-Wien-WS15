@@ -83,7 +83,7 @@ public class CalibrateRobot {
         if (opDrone.isPresent()) {
             Drone drone = opDrone.get();
             calibrateDrone(drone);
-            calibratedDroneRepo.storeEntity(drone);
+            calibratedDroneRepo.storeEntity(drone.toCalibratedDrone());
             log.info("Drone has been calibrated and stored");
         } else {
             log.info("No drone found");

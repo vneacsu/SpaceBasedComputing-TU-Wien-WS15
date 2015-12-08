@@ -8,6 +8,8 @@ import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.DefaultMzsCore;
 import org.mozartspaces.core.MzsCore;
 import org.mozartspaces.notifications.NotificationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.app.impl.SpaceBasedAppManager;
 import ws15.sbc.factory.common.app.impl.XBasedAppManager;
@@ -22,6 +24,8 @@ import java.util.concurrent.TimeoutException;
 
 public class CommonModule extends PrivateModule {
 
+    private static final Logger log = LoggerFactory.getLogger(PrivateModule.class);
+
     @Override
     protected void configure() {
         expose(AppManager.class);
@@ -34,6 +38,7 @@ public class CommonModule extends PrivateModule {
         expose(TxManager.class);
 
         final String repoStrategy = PropertyUtils.getProperty("repoStrategy").orElse("spaceBased");
+        log.info("Setting repository strategy to: {}", repoStrategy);
 
         switch (repoStrategy) {
             case "spaceBased":

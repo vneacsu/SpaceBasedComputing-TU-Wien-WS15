@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $(basename $0) [spaceBased|xBased]"
+    exit 0
+fi
+
+
 pids=""
 
 function cleanup {
@@ -9,21 +15,20 @@ function cleanup {
 
 trap cleanup SIGINT SIGTERM EXIT
 
+export JAVA_OPTS="-DrepoStrategy=$1"
 
-export JVM_OPTS="-DrepoStrategy=$1"
-
-./src/factory-ui/build/install/factory-ui/bin/factory-ui > /dev/null &
+#./src/factory-ui/build/install/factory-ui/bin/factory-ui > /dev/null &
 
 sleep 5
 
 
-ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_1" \
-./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
-pids="$pids $!"
+#ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_1" \
+#./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
+#pids="$pids $!"
 
-ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_2" \
-./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
-pids="$pids $!"
+#ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_2" \
+#./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
+#pids="$pids $!"
 
 
 CALIBRATE_ROBOT_OPTS="-DrobotId=Calibrator_1" \
@@ -62,7 +67,7 @@ SUPPLY_ROBOT_OPTS="-DrobotId=Supplier_4 -DcomponentType=rotor -Dquantity=3 -Dint
 pids="$pids $!"
 
 
-sleep 30
+sleep 3000
 
 SUPPLY_ROBOT_OPTS="-DrobotId=Supplier_5 -DcomponentType=casing -Dquantity=10 -Dinterval=5000" \
 ./src/supply-robot/build/install/supply-robot/bin/supply-robot > /dev/null &

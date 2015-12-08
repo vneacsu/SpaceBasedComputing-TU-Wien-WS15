@@ -2,6 +2,7 @@ package ws15.sbc.factory.logistics;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.dto.CalibratedDrone;
 import ws15.sbc.factory.common.dto.Drone;
 import ws15.sbc.factory.common.repository.BadDroneRepository;
 import ws15.sbc.factory.common.repository.CalibratedDroneRepository;
@@ -41,7 +42,7 @@ public class LogisticsRobot {
             txManager.beginTransaction();
 
 
-            Optional<Drone> opDrone = calibratedDroneRepo.takeOne(Drone.class);
+            Optional<CalibratedDrone> opDrone = calibratedDroneRepo.takeOne(CalibratedDrone.class);
             if (opDrone.isPresent()) {
                 Drone drone = opDrone.get();
 
@@ -49,10 +50,10 @@ public class LogisticsRobot {
 
                 drone.setTestedBy(robotId);
                 if (isInAdmissibleRange(drone)) {
-                    goodDroneRepo.storeEntity(drone);
+                    goodDroneRepo.storeEntity(drone.toGoodDrone());
                     log.info("Drone has been moved to the logistics container");
                 } else {
-                    badDroneRepo.storeEntity(drone);
+                    badDroneRepo.storeEntity(drone.toBadDrone());
                     log.info("Drone has been moved to the refuse container");
                 }
 

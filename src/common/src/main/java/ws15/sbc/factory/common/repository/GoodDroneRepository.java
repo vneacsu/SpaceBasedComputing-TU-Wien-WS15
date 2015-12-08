@@ -1,6 +1,6 @@
 package ws15.sbc.factory.common.repository;
 
-import ws15.sbc.factory.common.dto.Drone;
+import ws15.sbc.factory.common.dto.GoodDrone;
 
-public interface GoodDroneRepository extends Repository<Drone> {
+public interface GoodDroneRepository extends Repository<GoodDrone> {
 }

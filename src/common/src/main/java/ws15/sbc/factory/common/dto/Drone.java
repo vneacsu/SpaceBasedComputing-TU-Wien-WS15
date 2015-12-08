@@ -43,4 +43,16 @@ public class Drone extends ProcessedComponent {
     public String getTestedBy() {
         return testedBy;
     }
+
+    public CalibratedDrone toCalibratedDrone() {
+        return new CalibratedDrone(getAssembledBy(), engineRotorPairs, carcase);
+    }
+
+    public BadDrone toBadDrone() {
+        return new BadDrone(getAssembledBy(), engineRotorPairs, carcase);
+    }
+
+    public GoodDrone toGoodDrone() {
+        return new GoodDrone(getAssembledBy(), engineRotorPairs, carcase);
+    }
 }

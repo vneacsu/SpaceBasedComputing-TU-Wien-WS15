@@ -5,6 +5,6 @@ if [ "$#" -ne 1 ]; then
     exit 0
 fi
 
-export JAVA_OPTS="-DadmissibleRange=$1"
+export JAVA_OPTS="$JAVA_OPTS -DadmissibleRange=$1"
 
 ./src/logistics-robot/build/install/logistics-robot/bin/logistics-robot
