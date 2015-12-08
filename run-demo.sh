@@ -17,18 +17,18 @@ trap cleanup SIGINT SIGTERM EXIT
 
 export JAVA_OPTS="-DrepoStrategy=$1"
 
-#./src/factory-ui/build/install/factory-ui/bin/factory-ui > /dev/null &
+./src/factory-ui/build/install/factory-ui/bin/factory-ui > /dev/null &
 
 sleep 5
 
 
-#ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_1" \
-#./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
-#pids="$pids $!"
+ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_1" \
+./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
+pids="$pids $!"
 
-#ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_2" \
-#./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
-#pids="$pids $!"
+ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_2" \
+./src/assembly-robot/build/install/assembly-robot/bin/assembly-robot > /dev/null &
+pids="$pids $!"
 
 
 CALIBRATE_ROBOT_OPTS="-DrobotId=Calibrator_1" \

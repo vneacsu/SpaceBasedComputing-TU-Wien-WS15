@@ -165,7 +165,7 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
                 Event<Entity> event = (Event<Entity>) SerializationUtils.deserialize(body);
 
                 if (event.getActionType() == actionType) {
-                    log.info("Queue consumer woken up {} {}", event.getEntity(), actionType);
+                    log.info("Queue consumer woken up for {} with action {}", event.getEntity(), actionType);
                     consumer.accept(event.getEntity());
                 }
             }

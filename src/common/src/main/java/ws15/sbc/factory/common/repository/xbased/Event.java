@@ -12,11 +12,6 @@ public class Event<Entity extends Serializable> implements Serializable {
         this.actionType = actionType;
     }
 
-    public Event takenEvent(Entity entity) {
-        return new Event<>(entity, ActionType.TAKEN);
-    }
-
-
     public Entity getEntity() {
         return entity;
     }
