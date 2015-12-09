@@ -8,9 +8,15 @@ import ws15.sbc.factory.common.repository.Repository;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.synchronizedList;
+import static ws15.sbc.factory.common.repository.xbased.Event.ActionType.STORED;
+import static ws15.sbc.factory.common.repository.xbased.Event.ActionType.TAKEN;
 
 public abstract class GenericXBasedRepository<Entity extends Serializable> implements Repository<Entity> {
 
@@ -18,6 +24,10 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
 
     private String exchange;
     private String eventsRoutingKey;
+
+    private Optional<String> eventQueueName = Optional.empty();
+    private List<Consumer<Entity>> storedEventConsumers = synchronizedList(new ArrayList<>());
+    private List<Consumer<Entity>> takenEventConsumers = synchronizedList(new ArrayList<>());
 
     private Channel channel;
 
@@ -42,13 +52,13 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
     }
 
     private void initializeQueues() {
-        getQueuesType().stream()
+        getQueueTypes().stream()
                 .map(Class::getSimpleName)
                 .forEach(it -> {
                     log.info("Declaring queue {} bound to exchange {}", it, exchange);
 
                     try {
-                        channel.queueDeclare(it, false, false, true, null);
+                        channel.queueDeclare(it, false, false, false, null);
 
                         channel.queueBind(it, exchange, it);
                     } catch (IOException e) {
@@ -57,7 +67,7 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
                 });
     }
 
-    public abstract List<Class<? extends Entity>> getQueuesType();
+    public abstract List<Class<? extends Entity>> getQueueTypes();
 
     @Override
     public void storeEntity(Entity entity) {
@@ -67,7 +77,7 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
         byte[] content = SerializationUtils.serialize(entity);
 
         publish(content, routingKey);
-        notifyAction(entity, Event.ActionType.STORED);
+        notifyAction(entity, STORED);
     }
 
     @Override
@@ -77,20 +87,55 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
 
     @Override
     public <T extends Entity> Optional<T> takeOne(Class<T> clazz) {
-        log.info("Getting entity from queue {}", clazz.getSimpleName());
+        log.info("Getting entity of type {}", clazz);
 
-        Optional<GetResponse> response = getFromQueueAndAckDelivery(clazz.getSimpleName());
+        Optional<GetResponse> response = getFirstMatchingOfType(clazz);
         if (!response.isPresent()) {
-            log.info("Empty response from queue {}", clazz.getSimpleName());
+            log.info("Empty response for type {}", clazz);
             return Optional.empty();
         }
 
         Object entity = SerializationUtils.deserialize(response.get().getBody());
-        log.info("Got entity {} from queue {}", entity, clazz.getSimpleName());
+        log.info("Got entity {}", entity);
 
-        notifyAction((Entity) entity, Event.ActionType.TAKEN);
+        notifyAction((Entity) entity, TAKEN);
 
         return Optional.of((T) entity);
+    }
+
+    private Optional<GetResponse> getFirstMatchingOfType(Class<?> clazz) {
+        Optional<GetResponse> response = Optional.empty();
+
+        for (Class potentialType : getCompatibleEntityTypesFor(clazz)) {
+            response = getFromQueueAndAckDelivery(potentialType.getSimpleName());
+
+            if (response.isPresent()) break;
+        }
+
+        return response;
+    }
+
+    private List<Class<? extends Entity>> getCompatibleEntityTypesFor(Class<?> clazz) {
+        return getQueueTypes().stream()
+                .filter(clazz::isAssignableFrom)
+                .collect(Collectors.toList());
+    }
+
+    private Optional<GetResponse> getFromQueueAndAckDelivery(String queueName) {
+        log.info("Trying to get entity from queue {}", queueName);
+
+        try {
+            GetResponse response = channel.basicGet(queueName, false);
+            if (response == null) {
+                return Optional.empty();
+            }
+
+            channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+
+            return Optional.of(response);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void notifyAction(Entity entity, Event.ActionType actionType) {
@@ -108,44 +153,33 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
         }
     }
 
-    private Optional<GetResponse> getFromQueueAndAckDelivery(String queueName) {
-        try {
-            GetResponse response = channel.basicGet(queueName, false);
-            if (response == null) {
-                return Optional.empty();
-            }
-
-            channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
-
-            return Optional.of(response);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void onEntityStored(Consumer<Entity> consumer) {
         log.info("Registering listener for entity stored events");
 
-        setConsumerForTopic(consumer, Event.ActionType.STORED);
+        storedEventConsumers.add(consumer);
+
+        startEventQueueIfNotActive();
     }
 
-    @Override
-    public void onEntityTaken(Consumer<Entity> consumer) {
-        log.info("Registering listener for entity taken events");
+    private void startEventQueueIfNotActive() {
+        log.info("Starting event queue consumer if not active");
 
-        setConsumerForTopic(consumer, Event.ActionType.TAKEN);
-    }
+        if (eventQueueName.isPresent()) {
+            log.info("Event queue already active, using existent instance");
+            return;
+        }
 
-    private void setConsumerForTopic(Consumer<Entity> consumer, Event.ActionType actionType) {
+        eventQueueName = Optional.of(prepareEventQueue());
+
         try {
-            channel.basicConsume(prepareEventQueueFor(), prepareQueueConsumer(consumer, actionType));
+            channel.basicConsume(eventQueueName.get(), prepareEventQueueConsumer());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private String prepareEventQueueFor() {
+    private String prepareEventQueue() {
         log.info("Preparing event queue for routing key {}", eventsRoutingKey);
 
         try {
@@ -158,18 +192,29 @@ public abstract class GenericXBasedRepository<Entity extends Serializable> imple
         }
     }
 
-    private com.rabbitmq.client.Consumer prepareQueueConsumer(final Consumer<Entity> consumer, Event.ActionType actionType) {
+    private com.rabbitmq.client.Consumer prepareEventQueueConsumer() {
         return new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 Event<Entity> event = (Event<Entity>) SerializationUtils.deserialize(body);
 
-                if (event.getActionType() == actionType) {
-                    log.info("Queue consumer woken up for {} with action {}", event.getEntity(), actionType);
-                    consumer.accept(event.getEntity());
+                log.info("Queue consumer woken up for {} with action {}", event.getEntity(), event.getActionType());
+
+                if (event.getActionType() == STORED) {
+                    storedEventConsumers.forEach(it -> it.accept(event.getEntity()));
+                } else if (event.getActionType() == TAKEN) {
+                    takenEventConsumers.forEach(it -> it.accept(event.getEntity()));
                 }
             }
         };
     }
 
+    @Override
+    public void onEntityTaken(Consumer<Entity> consumer) {
+        log.info("Registering listener for entity taken events");
+
+        takenEventConsumers.add(consumer);
+
+        startEventQueueIfNotActive();
+    }
 }

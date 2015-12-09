@@ -1,7 +1,10 @@
 package ws15.sbc.factory.common.repository.xbased;
 
 import com.rabbitmq.client.Channel;
-import ws15.sbc.factory.common.dto.*;
+import ws15.sbc.factory.common.dto.CalibratedEngineRotorPair;
+import ws15.sbc.factory.common.dto.Carcase;
+import ws15.sbc.factory.common.dto.ProcessedComponent;
+import ws15.sbc.factory.common.dto.UnCalibratedEngineRotorPair;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
 
 import javax.inject.Inject;
@@ -18,10 +21,9 @@ public class XBasedProcessedComponentRepository extends GenericXBasedRepository<
     }
 
     @Override
-    public List<Class<? extends ProcessedComponent>> getQueuesType() {
+    public List<Class<? extends ProcessedComponent>> getQueueTypes() {
         return Arrays.asList(
                 Carcase.class,
-                EngineRotorPair.class,
                 CalibratedEngineRotorPair.class,
                 UnCalibratedEngineRotorPair.class
                 );

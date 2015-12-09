@@ -67,7 +67,7 @@ SUPPLY_ROBOT_OPTS="-DrobotId=Supplier_4 -DcomponentType=rotor -Dquantity=3 -Dint
 pids="$pids $!"
 
 
-sleep 3000
+sleep 30
 
 SUPPLY_ROBOT_OPTS="-DrobotId=Supplier_5 -DcomponentType=casing -Dquantity=10 -Dinterval=5000" \
 ./src/supply-robot/build/install/supply-robot/bin/supply-robot > /dev/null &

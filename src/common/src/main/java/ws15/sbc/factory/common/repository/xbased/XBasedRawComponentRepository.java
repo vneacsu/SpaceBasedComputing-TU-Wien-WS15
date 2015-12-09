@@ -20,7 +20,7 @@ public class XBasedRawComponentRepository extends GenericXBasedRepository<RawCom
     }
 
     @Override
-    public List<Class<? extends RawComponent>> getQueuesType() {
+    public List<Class<? extends RawComponent>> getQueueTypes() {
         return Arrays.asList(Engine.class, Rotor.class, Casing.class, ControlUnit.class);
     }
 

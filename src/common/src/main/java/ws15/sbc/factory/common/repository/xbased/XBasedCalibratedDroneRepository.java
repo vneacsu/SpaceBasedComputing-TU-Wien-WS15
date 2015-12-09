@@ -18,7 +18,7 @@ public class XBasedCalibratedDroneRepository extends GenericXBasedRepository<Cal
     }
 
     @Override
-    public List<Class<? extends CalibratedDrone>> getQueuesType() {
+    public List<Class<? extends CalibratedDrone>> getQueueTypes() {
         return Collections.singletonList(CalibratedDrone.class);
     }
 }

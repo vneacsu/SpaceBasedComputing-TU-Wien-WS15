@@ -18,7 +18,7 @@ public class XBasedDroneRepository extends GenericXBasedRepository<Drone> implem
     }
 
     @Override
-    public List<Class<? extends Drone>> getQueuesType() {
+    public List<Class<? extends Drone>> getQueueTypes() {
         return Collections.singletonList(Drone.class);
     }
 }

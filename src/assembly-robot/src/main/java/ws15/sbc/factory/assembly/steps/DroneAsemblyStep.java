@@ -8,6 +8,7 @@ import ws15.sbc.factory.common.dto.Drone;
 import ws15.sbc.factory.common.dto.EngineRotorPair;
 import ws15.sbc.factory.common.repository.DroneRepository;
 import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
+import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
 
 import javax.inject.Inject;
@@ -35,6 +36,8 @@ public class DroneAsemblyStep implements AssemblyStep {
     private ProcessedComponentRepository processedComponentRepository;
     @Inject
     private DroneRepository droneRepository;
+    @Inject
+    private TxManager txManager;
 
     private List<EngineRotorPair> availableEngineRotorPairs = emptyList();
     private Optional<Carcase> availableCarcase = Optional.empty();
@@ -45,12 +48,16 @@ public class DroneAsemblyStep implements AssemblyStep {
 
         acquireComponentsFromLocalStorage();
 
+        txManager.beginTransaction();
+
         if (itCanAssembleDrone()) {
             assembleDroneAndStoreItInInventory();
         } else {
             log.info("Insufficient resources to assemble a complete drone");
             storeAvailableComponentsInInventoryForFutureUse();
         }
+
+        txManager.commit();
     }
 
     private void acquireComponentsFromLocalStorage() {

@@ -16,7 +16,7 @@ public class XBasedBadDroneRepository extends GenericXBasedRepository<BadDrone> 
     }
 
     @Override
-    public List<Class<? extends BadDrone>> getQueuesType() {
+    public List<Class<? extends BadDrone>> getQueueTypes() {
         return Collections.singletonList(BadDrone.class);
     }
 }

@@ -6,6 +6,7 @@ import ws15.sbc.factory.common.CommonModule;
 import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.dto.factory.*;
 import ws15.sbc.factory.common.repository.RawComponentRepository;
+import ws15.sbc.factory.common.repository.TxManager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +42,9 @@ public class Main {
 
         RawComponentFactory rawComponentFactory = rawComponentFactoryMap.get(componentType);
         RawComponentRepository rawComponentRepository = injector.getInstance(RawComponentRepository.class);
+        TxManager txManager = injector.getInstance(TxManager.class);
 
-        new SupplyRobot(robotId, rawComponentRepository, rawComponentFactory, quantity, interval).run();
+        new SupplyRobot(robotId, rawComponentRepository, rawComponentFactory, txManager, quantity, interval).run();
 
         injector.getInstance(AppManager.class).shutdown();
     }
