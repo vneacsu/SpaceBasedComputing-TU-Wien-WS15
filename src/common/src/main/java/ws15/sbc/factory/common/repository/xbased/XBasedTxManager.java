@@ -35,6 +35,7 @@ public class XBasedTxManager implements TxManager {
     public void rollback() {
         try {
             channel.txRollback();
+            channel.basicRecover();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

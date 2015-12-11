@@ -98,8 +98,12 @@ public class EngineRotorPairAssemblyStep implements AssemblyStep {
     private void storeEngineRotorPairsForFutureUse() {
         log.info("Storing available engine rotor pairs for future use...");
 
+        txManager.beginTransaction();
+
         List<EngineRotorPair> availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
 
         processedComponentRepository.storeEntities(availableEngineRotorPairs);
+
+        txManager.commit();
     }
 }
