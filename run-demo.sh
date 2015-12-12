@@ -5,6 +5,9 @@ if [ "$#" -ne 1 ]; then
     exit 0
 fi
 
+if [ "$1" == "xBased" ]; then
+    ./start-rabbitmq.sh
+fi
 
 pids=""
 
