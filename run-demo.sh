@@ -7,6 +7,8 @@ fi
 
 if [ "$1" == "xBased" ]; then
     ./start-rabbitmq.sh
+
+    sleep 5
 fi
 
 pids=""

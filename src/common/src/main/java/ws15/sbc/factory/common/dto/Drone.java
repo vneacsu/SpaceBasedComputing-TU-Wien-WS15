@@ -49,10 +49,16 @@ public class Drone extends ProcessedComponent {
     }
 
     public BadDrone toBadDrone() {
-        return new BadDrone(getAssembledBy(), engineRotorPairs, carcase);
+        BadDrone drone = new BadDrone(getAssembledBy(), engineRotorPairs, carcase);
+        drone.setTestedBy(testedBy);
+
+        return drone;
     }
 
     public GoodDrone toGoodDrone() {
-        return new GoodDrone(getAssembledBy(), engineRotorPairs, carcase);
+        GoodDrone drone = new GoodDrone(getAssembledBy(), engineRotorPairs, carcase);
+        drone.setTestedBy(testedBy);
+
+        return drone;
     }
 }
