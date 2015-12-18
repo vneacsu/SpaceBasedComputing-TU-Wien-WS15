@@ -13,9 +13,12 @@ import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.app.impl.SpaceBasedAppManager;
 import ws15.sbc.factory.common.app.impl.XBasedAppManager;
-import ws15.sbc.factory.common.repository.*;
-import ws15.sbc.factory.common.repository.mzs.*;
-import ws15.sbc.factory.common.repository.xbased.*;
+import ws15.sbc.factory.common.repository.Repository;
+import ws15.sbc.factory.common.repository.TxManager;
+import ws15.sbc.factory.common.repository.mzs.SpaceBasedRepository;
+import ws15.sbc.factory.common.repository.mzs.SpaceBasedTxManager;
+import ws15.sbc.factory.common.repository.xBased.XBasedRepository;
+import ws15.sbc.factory.common.repository.xBased.XBasedTxManager;
 import ws15.sbc.factory.common.utils.PropertyUtils;
 
 import java.io.IOException;
@@ -29,12 +32,7 @@ public class CommonModule extends PrivateModule {
     @Override
     protected void configure() {
         expose(AppManager.class);
-        expose(RawComponentRepository.class);
-        expose(ProcessedComponentRepository.class);
-        expose(DroneRepository.class);
-        expose(CalibratedDroneRepository.class);
-        expose(GoodDroneRepository.class);
-        expose(BadDroneRepository.class);
+        expose(Repository.class);
         expose(TxManager.class);
 
         final String repoStrategy = PropertyUtils.getProperty("repoStrategy").orElse("spaceBased");
@@ -62,12 +60,7 @@ public class CommonModule extends PrivateModule {
         bind(URI.class).toInstance(URI.create("xvsm://localhost:4242"));
 
         bind(AppManager.class).to(SpaceBasedAppManager.class);
-        bind(RawComponentRepository.class).to(SpaceBasedRawComponentRepository.class);
-        bind(ProcessedComponentRepository.class).to(SpaceBasedProcessedComponentRepository.class);
-        bind(DroneRepository.class).to(SpaceBasedDroneRepository.class);
-        bind(CalibratedDroneRepository.class).to(SpaceBasedCalibratedDroneRepository.class);
-        bind(GoodDroneRepository.class).to(SpaceBasedGoodDroneRepository.class);
-        bind(BadDroneRepository.class).to(SpaceBasedBadDroneRepository.class);
+        bind(Repository.class).to(SpaceBasedRepository.class);
         bind(TxManager.class).to(SpaceBasedTxManager.class);
     }
 
@@ -83,12 +76,7 @@ public class CommonModule extends PrivateModule {
         }
 
         bind(AppManager.class).to(XBasedAppManager.class);
-        bind(RawComponentRepository.class).to(XBasedRawComponentRepository.class);
-        bind(ProcessedComponentRepository.class).to(XBasedProcessedComponentRepository.class);
-        bind(DroneRepository.class).to(XBasedDroneRepository.class);
-        bind(CalibratedDroneRepository.class).to(XBasedCalibratedDroneRepository.class);
-        bind(GoodDroneRepository.class).to(XBasedGoodDroneRepository.class);
-        bind(BadDroneRepository.class).to(XBasedBadDroneRepository.class);
+        bind(Repository.class).to(XBasedRepository.class);
         bind(TxManager.class).to(XBasedTxManager.class);
     }
 }

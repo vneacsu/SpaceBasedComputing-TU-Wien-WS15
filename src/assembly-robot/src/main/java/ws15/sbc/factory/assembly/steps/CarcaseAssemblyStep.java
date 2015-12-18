@@ -6,8 +6,8 @@ import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.dto.Carcase;
 import ws15.sbc.factory.common.dto.Casing;
 import ws15.sbc.factory.common.dto.ControlUnit;
-import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
-import ws15.sbc.factory.common.repository.RawComponentRepository;
+import ws15.sbc.factory.common.repository.EntityMatcher;
+import ws15.sbc.factory.common.repository.Repository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
 
@@ -27,9 +27,7 @@ public class CarcaseAssemblyStep implements AssemblyStep {
     @Inject
     private TxManager txManager;
     @Inject
-    private ProcessedComponentRepository processedComponentRepository;
-    @Inject
-    private RawComponentRepository rawComponentRepository;
+    private Repository repository;
     @Inject
     private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
 
@@ -67,18 +65,18 @@ public class CarcaseAssemblyStep implements AssemblyStep {
     private Optional<Carcase> acquireCarcaseFromInventory() {
         log.info("Trying to acquire carcase from inventory");
 
-        return processedComponentRepository.takeOne(Carcase.class);
+        return repository.takeOne(EntityMatcher.of(Carcase.class));
     }
 
     private Optional<Carcase> assembleNewCarcase() {
         log.info("Trying to assemble new carcase");
 
-        Optional<Casing> casing = rawComponentRepository.takeOne(Casing.class);
+        Optional<Casing> casing = repository.takeOne(EntityMatcher.of(Casing.class));
         if (!casing.isPresent()) {
             return Optional.empty();
         }
 
-        Optional<ControlUnit> controlUnit = rawComponentRepository.takeOne(ControlUnit.class);
+        Optional<ControlUnit> controlUnit = repository.takeOne(EntityMatcher.of(ControlUnit.class));
         if (!controlUnit.isPresent()) {
             return Optional.empty();
         }

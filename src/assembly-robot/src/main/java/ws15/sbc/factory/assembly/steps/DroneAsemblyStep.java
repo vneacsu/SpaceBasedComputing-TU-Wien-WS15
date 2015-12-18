@@ -6,8 +6,7 @@ import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.dto.Carcase;
 import ws15.sbc.factory.common.dto.Drone;
 import ws15.sbc.factory.common.dto.EngineRotorPair;
-import ws15.sbc.factory.common.repository.DroneRepository;
-import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
+import ws15.sbc.factory.common.repository.Repository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
 
@@ -33,9 +32,7 @@ public class DroneAsemblyStep implements AssemblyStep {
     @Inject
     private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
     @Inject
-    private ProcessedComponentRepository processedComponentRepository;
-    @Inject
-    private DroneRepository droneRepository;
+    private Repository repository;
     @Inject
     private TxManager txManager;
 
@@ -78,7 +75,7 @@ public class DroneAsemblyStep implements AssemblyStep {
 
         clearAvailableComponents();
 
-        droneRepository.storeEntity(drone);
+        repository.storeEntity(drone);
     }
 
     private void clearAvailableComponents() {
@@ -90,10 +87,10 @@ public class DroneAsemblyStep implements AssemblyStep {
         log.info("Storing available engine rotor pairs and carcase in inventory, for future use");
 
         if (availableEngineRotorPairs.size() > 0) {
-            processedComponentRepository.storeEntities(availableEngineRotorPairs);
+            repository.storeEntities(availableEngineRotorPairs);
         }
 
-        availableCarcase.ifPresent(carcase -> processedComponentRepository.storeEntity(carcase));
+        availableCarcase.ifPresent(carcase -> repository.storeEntity(carcase));
 
         clearAvailableComponents();
     }

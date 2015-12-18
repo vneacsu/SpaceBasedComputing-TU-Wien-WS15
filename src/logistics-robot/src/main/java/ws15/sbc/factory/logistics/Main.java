@@ -15,23 +15,8 @@ public class Main {
     private static final AppManager appManager = injector.getInstance(AppManager.class);
 
     public static void main(String[] argv) {
-        registerShutdownHook();
+        appManager.registerShutdownHook(robot::stop);
 
         robot.run();
-    }
-
-    private static void registerShutdownHook() {
-        Thread mainThread = Thread.currentThread();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    robot.stop();
-                    try {
-                        mainThread.join();
-                    } catch (InterruptedException ignore) {
-                    }
-
-                    appManager.shutdown();
-                })
-        );
     }
 }

@@ -2,6 +2,8 @@ package ws15.sbc.factory.common.dto;
 
 public abstract class ProcessedComponent extends Component {
 
+    public static final String CALIBRATED_BY_FIELD = "calibratedBy";
+
     private final String assembledBy;
 
     public ProcessedComponent(String assembledBy) {
@@ -15,6 +17,10 @@ public abstract class ProcessedComponent extends Component {
     @Override
     public String toString() {
         return String.format("[%s: id - %s, assembledBy - %s]",
-                this.getClass().getSimpleName(), getId(), assembledBy);
+                getComponentName(), getId(), assembledBy);
+    }
+
+    protected String getComponentName() {
+        return getClass().getSimpleName();
     }
 }

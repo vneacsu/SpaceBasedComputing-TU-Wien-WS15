@@ -1,5 +1,7 @@
 package ws15.sbc.factory.common.dto;
 
+import com.google.common.base.Preconditions;
+
 public class Carcase extends ProcessedComponent {
 
     private final Casing casing;
@@ -14,8 +16,15 @@ public class Carcase extends ProcessedComponent {
         this.controlUnit = controlUnit;
     }
 
-    public void setCalibrationSum(Integer calibrationSum) {
+    public void calibrate(String calibratedBy, int calibrationSum) {
+        Preconditions.checkState(!isCalibrated(), "Carcaase already calibrated!");
+
+        this.calibratedBy = calibratedBy;
         this.calibrationSum = calibrationSum;
+    }
+
+    public boolean isCalibrated() {
+        return calibratedBy != null;
     }
 
     public Casing getCasing() {

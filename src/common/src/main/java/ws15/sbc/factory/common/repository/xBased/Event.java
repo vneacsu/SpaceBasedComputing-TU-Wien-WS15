@@ -1,8 +1,8 @@
-package ws15.sbc.factory.common.repository.xbased;
+package ws15.sbc.factory.common.repository.xBased;
 
 import java.io.Serializable;
 
-public class Event<Entity extends Serializable> implements Serializable {
+class Event<Entity extends Serializable> implements Serializable {
 
     private final Entity entity;
     private final ActionType actionType;

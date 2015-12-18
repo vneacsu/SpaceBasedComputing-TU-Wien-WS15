@@ -1,18 +1,17 @@
 package ws15.sbc.factory.common.repository.mzs;
 
-import org.mozartspaces.capi3.AnyCoordinator;
-import org.mozartspaces.capi3.Coordinator;
-import org.mozartspaces.capi3.CountNotMetException;
-import org.mozartspaces.capi3.TypeCoordinator;
+import org.mozartspaces.capi3.*;
 import org.mozartspaces.core.*;
-import org.mozartspaces.core.MzsConstants.Container;
 import org.mozartspaces.notifications.NotificationListener;
 import org.mozartspaces.notifications.NotificationManager;
 import org.mozartspaces.notifications.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.repository.EntityMatcher;
 import ws15.sbc.factory.common.repository.Repository;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Arrays;
@@ -25,27 +24,29 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
 
-public abstract class GenericSpaceBasedRepository<Entity extends Serializable> implements Repository<Entity> {
+@Singleton
+public class SpaceBasedRepository implements Repository {
 
-    private static final Logger log = LoggerFactory.getLogger(GenericSpaceBasedRepository.class);
+    private static final Logger log = LoggerFactory.getLogger(SpaceBasedRepository.class);
 
+    private static final String CONTAINER_NAME = "factory-container";
     private static final int TAKE_TIMEOUT = 2 * 1000;
 
-    private URI space;
-    private Capi capi;
-    private NotificationManager notificationManager;
-    private ContainerReference cref;
+    final private URI space;
+    final private Capi capi;
+    final private ContainerReference cref;
+    final private NotificationManager notificationManager;
+    final private SpaceBasedTxManager txManager;
 
-    private SpaceBasedTxManager txManager;
-
-    public GenericSpaceBasedRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {
+    @Inject
+    public SpaceBasedRepository(SpaceBasedTxManager txManager, Capi capi, NotificationManager notificationManager, URI space) {
         this.space = space;
         this.txManager = txManager;
 
         this.capi = capi;
         this.notificationManager = notificationManager;
 
-        cref = getOrCreateComponentContainer();
+        this.cref = getOrCreateComponentContainer();
     }
 
     private ContainerReference getOrCreateComponentContainer() {
@@ -53,43 +54,40 @@ public abstract class GenericSpaceBasedRepository<Entity extends Serializable> i
     }
 
     private Optional<ContainerReference> getComponentContainer() {
-        log.info("Lookup container {}", getContainerName());
+        log.info("Lookup container {}", CONTAINER_NAME);
 
         try {
-            ContainerReference cref = capi.lookupContainer(getContainerName(), space, DEFAULT, null);
+            ContainerReference cref = capi.lookupContainer(CONTAINER_NAME, space, DEFAULT, null);
 
-            log.info("Container {} found", getContainerName());
+            log.info("Container {} found", CONTAINER_NAME);
 
             return Optional.of(cref);
         } catch (MzsCoreException e) {
-            log.info("Container {} not found", getContainerName());
+            log.info("Container {} not found", CONTAINER_NAME);
             return Optional.empty();
         }
     }
 
-    protected abstract String getContainerName();
-
-
     private ContainerReference createComponentContainer() {
-        log.info("Creating container {}", getContainerName());
+        log.info("Creating container {}", CONTAINER_NAME);
 
-        List<Coordinator> coordinators = asList(new AnyCoordinator(), new TypeCoordinator());
+        List<Coordinator> coordinators = asList(new QueryCoordinator(), new FifoCoordinator());
 
         try {
-            return capi.createContainer(getContainerName(), space, Container.UNBOUNDED, coordinators, null, null);
+            return capi.createContainer(CONTAINER_NAME, space, MzsConstants.Container.UNBOUNDED, coordinators, null, null);
         } catch (MzsCoreException e) {
             throw new RuntimeException("Failed to create container", e);
         }
     }
 
     @Override
-    public void storeEntity(Entity entity) {
+    public void storeEntity(Serializable entity) {
         storeEntities(singletonList(entity));
     }
 
     @Override
-    public void storeEntities(List<? extends Entity> entities) {
-        log.info("Writing entities {} to container {}", Arrays.toString(entities.toArray()), getContainerName());
+    public void storeEntities(List<? extends Serializable> entities) {
+        log.info("Writing entities {} to container {}", Arrays.toString(entities.toArray()), CONTAINER_NAME);
 
         Entry[] entries = entities.stream()
                 .map(Entry::new)
@@ -101,16 +99,26 @@ public abstract class GenericSpaceBasedRepository<Entity extends Serializable> i
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     @Override
-    public <T extends Entity> Optional<T> takeOne(Class<T> clazz) {
-        log.info("Taking one entity of type {} from container {}", clazz, getContainerName());
+    public <T extends Serializable> Optional<T> takeOne(EntityMatcher<T> matcher) {
+        Optional<List<T>> entities = take(matcher, 1);
+
+        return entities.isPresent() ? Optional.of(entities.get().get(0)) : Optional.empty();
+    }
+
+    @Override
+    public <T extends Serializable> Optional<List<T>> take(EntityMatcher<T> matcher, int count) {
+        log.info("Taking {} entities matching {} from container {}", count, matcher, CONTAINER_NAME);
+
+        Selector selector = QueryCoordinator.newSelector(matcher.mapToMzsQuery(), count);
 
         try {
-            List<T> entities = capi.take(cref, TypeCoordinator.newSelector(clazz), TAKE_TIMEOUT, txManager.currentTransaction());
+            List<T> entities = capi.take(cref, selector, TAKE_TIMEOUT, txManager.currentTransaction());
 
-            return Optional.of(entities.get(0));
+            return Optional.of(entities);
         } catch (CountNotMetException | MzsTimeoutException e) {
             log.warn("Failed to take entity from container");
             return Optional.empty();
@@ -120,10 +128,11 @@ public abstract class GenericSpaceBasedRepository<Entity extends Serializable> i
     }
 
     @Override
-    public void onEntityStored(Consumer<Entity> consumer) {
+    public <T extends Serializable> void onEntityStored(EntityMatcher<T> matcher, Consumer<T> consumer) {
         NotificationListener notificationListener = (source, operation, entries) -> entries.stream()
                 .map(e -> ((Entry) e).getValue())
-                .forEach(e -> consumer.accept((Entity) e));
+                .filter(matcher::matches)
+                .forEach(e -> consumer.accept((T) e)); //guarded by matcher
 
         createNotificationFor(Operation.WRITE, notificationListener);
     }
@@ -137,9 +146,11 @@ public abstract class GenericSpaceBasedRepository<Entity extends Serializable> i
     }
 
     @Override
-    public void onEntityTaken(Consumer<Entity> consumer) {
+    public <T extends Serializable> void onEntityTaken(EntityMatcher<T> matcher, Consumer<T> consumer) {
+        @SuppressWarnings("guarded by matcher")
         NotificationListener notificationListener = (source, operation, entries) -> entries.stream()
-                .forEach(e -> consumer.accept((Entity) e));
+                .filter(matcher::matches)
+                .forEach(e -> consumer.accept((T) e));
 
         createNotificationFor(Operation.TAKE, notificationListener);
     }

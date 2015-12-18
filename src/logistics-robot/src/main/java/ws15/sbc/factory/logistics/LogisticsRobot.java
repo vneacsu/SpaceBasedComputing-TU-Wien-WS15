@@ -2,39 +2,36 @@ package ws15.sbc.factory.logistics;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.dto.CalibratedDrone;
 import ws15.sbc.factory.common.dto.Drone;
-import ws15.sbc.factory.common.repository.BadDroneRepository;
-import ws15.sbc.factory.common.repository.CalibratedDroneRepository;
-import ws15.sbc.factory.common.repository.GoodDroneRepository;
+import ws15.sbc.factory.common.repository.EntityMatcher;
+import ws15.sbc.factory.common.repository.Repository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
-import ws15.sbc.factory.common.utils.PropertyUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static ws15.sbc.factory.common.dto.Drone.IS_CALIBRATED_FIELD;
+import static ws15.sbc.factory.common.dto.Drone.TESTED_BY_FIELD;
 
 public class LogisticsRobot {
 
     private static final Logger log = LoggerFactory.getLogger(LogisticsRobot.class);
 
-    private final String robotId;
     private final AtomicBoolean keepWorking = new AtomicBoolean(true);
 
     @Inject @Named("AdmissibleRange")
     private Integer admissibleRange;
 
-    @Inject private CalibratedDroneRepository calibratedDroneRepo;
-    @Inject private GoodDroneRepository goodDroneRepo;
-    @Inject private BadDroneRepository badDroneRepo;
-    @Inject private TxManager txManager;
+    @Inject
+    @Named("robotId")
+    private String robotId;
 
-    public LogisticsRobot() {
-        this.robotId = PropertyUtils.getProperty("robotId").orElse(UUID.randomUUID().toString());
-    }
+    @Inject
+    private Repository repository;
+    @Inject private TxManager txManager;
 
     public void run() {
         while (keepWorking.get()) {
@@ -42,28 +39,27 @@ public class LogisticsRobot {
             txManager.beginTransaction();
 
 
-            Optional<CalibratedDrone> opDrone = calibratedDroneRepo.takeOne(CalibratedDrone.class);
+            Optional<Drone> opDrone = repository.takeOne(calibratedNotTestedDroneMatcher());
             if (opDrone.isPresent()) {
                 Drone drone = opDrone.get();
-
                 log.info("Found drone with calibration value {}", drone.getCalibrationSum());
 
-                drone.setTestedBy(robotId);
-                if (isInAdmissibleRange(drone)) {
-                    goodDroneRepo.storeEntity(drone.toGoodDrone());
-                    log.info("Drone has been moved to the logistics container");
-                } else {
-                    badDroneRepo.storeEntity(drone.toBadDrone());
-                    log.info("Drone has been moved to the refuse container");
-                }
-
+                drone.setTestResult(robotId, isInAdmissibleRange(drone));
                 OperationUtils.simulateDelay(1000);
+
+                repository.storeEntity(drone);
             } else {
                 log.info("No drone found");
             }
 
             txManager.commit();
         }
+    }
+
+    private EntityMatcher<Drone> calibratedNotTestedDroneMatcher() {
+        return EntityMatcher.of(Drone.class)
+                .withFieldEqualTo(IS_CALIBRATED_FIELD, true)
+                .withNullField(TESTED_BY_FIELD);
     }
 
     private boolean isInAdmissibleRange(Drone drone) {

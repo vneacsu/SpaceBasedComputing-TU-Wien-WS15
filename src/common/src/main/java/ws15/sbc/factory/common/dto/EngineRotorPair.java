@@ -1,6 +1,8 @@
 package ws15.sbc.factory.common.dto;
 
-public abstract class EngineRotorPair extends ProcessedComponent {
+import com.google.common.base.Preconditions;
+
+public class EngineRotorPair extends ProcessedComponent {
 
     private final Engine engine;
     private final Rotor rotor;
@@ -14,7 +16,10 @@ public abstract class EngineRotorPair extends ProcessedComponent {
         this.rotor = rotor;
     }
 
-    public void setCalibrationValue(Integer calibrationValue) {
+    public void calibrate(String calibratedBy, int calibrationValue) {
+        Preconditions.checkState(!isCalibrated(), "Engine rotor pair already calibrated!");
+
+        this.calibratedBy = calibratedBy;
         this.calibrationValue = calibrationValue;
     }
 
@@ -30,15 +35,16 @@ public abstract class EngineRotorPair extends ProcessedComponent {
         return calibrationValue;
     }
 
-    public void setCalibratedBy(String calibratedBy) {
-        this.calibratedBy = calibratedBy;
-    }
-
     public String getCalibratedBy() {
         return calibratedBy;
     }
 
-    abstract public boolean isCalibrated();
+    public boolean isCalibrated() {
+        return calibratedBy != null;
+    }
 
-    abstract public EngineRotorPair calibrate(String calibratedBy);
+    @Override
+    protected String getComponentName() {
+        return isCalibrated() ? "Calibrated-EngineRotorPair" : "Uncalibrated-EngineRotorPair";
+    }
 }

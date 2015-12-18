@@ -4,21 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.dto.Drone;
 import ws15.sbc.factory.common.dto.EngineRotorPair;
-import ws15.sbc.factory.common.dto.UnCalibratedEngineRotorPair;
-import ws15.sbc.factory.common.repository.CalibratedDroneRepository;
-import ws15.sbc.factory.common.repository.DroneRepository;
-import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
+import ws15.sbc.factory.common.repository.EntityMatcher;
+import ws15.sbc.factory.common.repository.Repository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
 import ws15.sbc.factory.common.utils.PropertyUtils;
 
 import javax.inject.Inject;
-import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
+
+import static ws15.sbc.factory.common.dto.Drone.IS_CALIBRATED_FIELD;
+import static ws15.sbc.factory.common.dto.ProcessedComponent.CALIBRATED_BY_FIELD;
 
 public class CalibrateRobot {
 
@@ -30,13 +29,7 @@ public class CalibrateRobot {
     private final AtomicBoolean keepWorking = new AtomicBoolean(true);
 
     @Inject
-    private ProcessedComponentRepository processedComponentRepo;
-
-    @Inject
-    private DroneRepository droneRepo;
-
-    @Inject
-    private CalibratedDroneRepository calibratedDroneRepo;
+    private Repository repository;
 
     @Inject
     private TxManager txManager;
@@ -59,14 +52,11 @@ public class CalibrateRobot {
         log.info("Looking for a engine-rotor pair to calibrate...");
         txManager.beginTransaction();
 
-        Optional<UnCalibratedEngineRotorPair> opEngineRotorPair = processedComponentRepo.takeOne(UnCalibratedEngineRotorPair.class);
-        if (opEngineRotorPair.isPresent()) {
-            UnCalibratedEngineRotorPair uncalibrated = opEngineRotorPair.get();
+        Optional<EngineRotorPair> engineRotorPair = repository.takeOne(notCalibratedEngineRotorPairMatcher());
+        if (engineRotorPair.isPresent()) {
+            calibrateEngineRotorPair(engineRotorPair.get());
 
-            EngineRotorPair calibrated = uncalibrated.calibrate(robotId);
-            OperationUtils.simulateDelay(1000);
-
-            processedComponentRepo.storeEntity(calibrated);
+            repository.storeEntity(engineRotorPair.get());
             log.info("Engine-rotor pair has been calibrated and stored");
         } else {
             log.info("No engine-rotor pair found");
@@ -75,15 +65,27 @@ public class CalibrateRobot {
         txManager.commit();
     }
 
+    private void calibrateEngineRotorPair(EngineRotorPair engineRotorPair) {
+        engineRotorPair.calibrate(robotId, nextCalibrationValue());
+        OperationUtils.simulateDelay(1000);
+    }
+
+    private EntityMatcher<EngineRotorPair> notCalibratedEngineRotorPairMatcher() {
+        return EntityMatcher.of(EngineRotorPair.class).withNullField(CALIBRATED_BY_FIELD);
+    }
+
+    private int nextCalibrationValue() {
+        return random.nextInt(21) - 10;
+    }
+
     private void takeDrone() {
         log.info("Looking for a drone...");
         txManager.beginTransaction();
 
-        Optional<Drone> opDrone = droneRepo.takeOne(Drone.class);
-        if (opDrone.isPresent()) {
-            Drone drone = opDrone.get();
-            calibrateDrone(drone);
-            calibratedDroneRepo.storeEntity(drone.toCalibratedDrone());
+        Optional<Drone> drone = repository.takeOne(notCalibratedDroneMatcher());
+        if (drone.isPresent()) {
+            calibrateDrone(drone.get());
+            repository.storeEntity(drone.get());
             log.info("Drone has been calibrated and stored");
         } else {
             log.info("No drone found");
@@ -92,20 +94,21 @@ public class CalibrateRobot {
         txManager.commit();
     }
 
+    private EntityMatcher<Drone> notCalibratedDroneMatcher() {
+        return EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, false);
+    }
+
     private void calibrateDrone(Drone drone) {
-        List<EngineRotorPair> engineRotors = drone.getEngineRotorPairs().stream().map(e -> {
-            if (e.isCalibrated()) {
-                return e;
-            } else {
-                OperationUtils.simulateDelay(1000);
-                return e.calibrate(robotId);
-            }
-        }).collect(Collectors.toList());
+        drone.getEngineRotorPairs().stream()
+                .filter(it -> !it.isCalibrated())
+                .forEach(this::calibrateEngineRotorPair);
 
-        drone.setEngineRotorPairs(engineRotors);
+        drone.calibrate(robotId, getCalibrationSumFor(drone));
+        OperationUtils.simulateDelay(1000);
+    }
 
-        Integer sum = engineRotors.stream().mapToInt(EngineRotorPair::getCalibrationValue).sum();
-        drone.calibrate(sum, robotId);
+    private int getCalibrationSumFor(Drone drone) {
+        return drone.getEngineRotorPairs().stream().mapToInt(EngineRotorPair::getCalibrationValue).sum();
     }
 
     public void stop() {

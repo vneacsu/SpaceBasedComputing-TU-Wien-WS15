@@ -6,24 +6,26 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ws15.sbc.factory.common.dto.Carcase;
 import ws15.sbc.factory.common.dto.Drone;
-import ws15.sbc.factory.common.repository.*;
+import ws15.sbc.factory.common.dto.EngineRotorPair;
+import ws15.sbc.factory.common.dto.RawComponent;
+import ws15.sbc.factory.common.repository.EntityMatcher;
+import ws15.sbc.factory.common.repository.Repository;
 
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
+import static ws15.sbc.factory.common.dto.Drone.*;
+
 public class FactoryDashboardController implements Initializable {
 
     private static final Logger log = LoggerFactory.getLogger(FactoryDashboardController.class);
 
-    @Inject private RawComponentRepository rawComponentRepository;
-    @Inject private ProcessedComponentRepository processedComponentRepository;
-    @Inject private DroneRepository droneRepository;
-    @Inject private CalibratedDroneRepository calibratedDroneRepository;
-    @Inject private GoodDroneRepository goodDroneRepository;
-    @Inject private BadDroneRepository badDroneRepository;
+    @Inject
+    private Repository repository;
 
     @FXML
     private FactoryDashboardModel model;
@@ -47,23 +49,26 @@ public class FactoryDashboardController implements Initializable {
     }
 
     private void registerInventoryChangeListeners() {
-        rawComponentRepository.onEntityStored(component -> Platform.runLater(() -> model.getRawComponents().add(component)));
-        rawComponentRepository.onEntityTaken(component -> Platform.runLater(() -> model.getRawComponents().remove(component)));
+        repository.onEntityStored(EntityMatcher.of(RawComponent.class), it -> Platform.runLater(() -> model.getRawComponents().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(RawComponent.class), it -> Platform.runLater(() -> model.getRawComponents().remove(it)));
 
-        processedComponentRepository.onEntityStored(component -> Platform.runLater(() -> model.getProcessedComponents().add(component)));
-        processedComponentRepository.onEntityTaken(component -> Platform.runLater(() -> model.getProcessedComponents().remove(component)));
+        repository.onEntityStored(EntityMatcher.of(EngineRotorPair.class), it -> Platform.runLater(() -> model.getProcessedComponents().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(EngineRotorPair.class), it -> Platform.runLater(() -> model.getProcessedComponents().remove(it)));
 
-        droneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getDrones().add(drone))));
-        droneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getDrones().remove(drone))));
+        repository.onEntityStored(EntityMatcher.of(Carcase.class), it -> Platform.runLater(() -> model.getProcessedComponents().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(Carcase.class), it -> Platform.runLater(() -> model.getProcessedComponents().remove(it)));
 
-        calibratedDroneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getCalibratedDrones().add(drone))));
-        calibratedDroneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getCalibratedDrones().remove(drone))));
+        repository.onEntityStored(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, false), it -> Platform.runLater(() -> model.getDrones().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, false), it -> Platform.runLater(() -> model.getDrones().remove(it)));
 
-        goodDroneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getGoodDrones().add(drone))));
-        goodDroneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getGoodDrones().remove(drone))));
+        repository.onEntityStored(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, true).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, true).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().remove(it)));
 
-        badDroneRepository.onEntityStored(drone -> Platform.runLater((() -> model.getBadDrones().add(drone))));
-        badDroneRepository.onEntityTaken(drone -> Platform.runLater((() -> model.getBadDrones().remove(drone))));
+        repository.onEntityStored(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, true), it -> Platform.runLater(() -> model.getGoodDrones().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, true), it -> Platform.runLater(() -> model.getGoodDrones().remove(it)));
+
+        repository.onEntityStored(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, false), it -> Platform.runLater(() -> model.getBadDrones().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, false), it -> Platform.runLater(() -> model.getBadDrones().remove(it)));
     }
 
     private void initializeDroneListViewsListeners() {

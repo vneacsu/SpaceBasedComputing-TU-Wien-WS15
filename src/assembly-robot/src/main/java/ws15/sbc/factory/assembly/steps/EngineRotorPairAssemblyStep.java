@@ -6,9 +6,8 @@ import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.dto.Engine;
 import ws15.sbc.factory.common.dto.EngineRotorPair;
 import ws15.sbc.factory.common.dto.Rotor;
-import ws15.sbc.factory.common.dto.UnCalibratedEngineRotorPair;
-import ws15.sbc.factory.common.repository.ProcessedComponentRepository;
-import ws15.sbc.factory.common.repository.RawComponentRepository;
+import ws15.sbc.factory.common.repository.EntityMatcher;
+import ws15.sbc.factory.common.repository.Repository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
 
@@ -30,9 +29,7 @@ public class EngineRotorPairAssemblyStep implements AssemblyStep {
     @Inject
     private TxManager txManager;
     @Inject
-    private RawComponentRepository rawComponentRepository;
-    @Inject
-    private ProcessedComponentRepository processedComponentRepository;
+    private Repository repository;
     @Inject
     private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
 
@@ -74,36 +71,32 @@ public class EngineRotorPairAssemblyStep implements AssemblyStep {
     private Optional<EngineRotorPair> acquireEngineRotorPair() {
         log.info("Trying to acquire existent engine rotor pair...");
 
-        return processedComponentRepository.takeOne(EngineRotorPair.class);
+        return repository.takeOne(EntityMatcher.of(EngineRotorPair.class));
     }
 
     private Optional<EngineRotorPair> assembleEngineRotorPair() {
         log.info("Assembling new engine rotor pair...");
 
-        Optional<Engine> engine = rawComponentRepository.takeOne(Engine.class);
+        Optional<Engine> engine = repository.takeOne(EntityMatcher.of(Engine.class));
         if (!engine.isPresent()) {
             return Optional.empty();
         }
 
-        Optional<Rotor> rotor = rawComponentRepository.takeOne(Rotor.class);
+        Optional<Rotor> rotor = repository.takeOne(EntityMatcher.of(Rotor.class));
         if (!rotor.isPresent()) {
             return Optional.empty();
         }
 
         OperationUtils.simulateDelay(1000);
 
-        return Optional.of(new UnCalibratedEngineRotorPair(robotId, engine.get(), rotor.get()));
+        return Optional.of(new EngineRotorPair(robotId, engine.get(), rotor.get()));
     }
 
     private void storeEngineRotorPairsForFutureUse() {
         log.info("Storing available engine rotor pairs for future use...");
 
-        txManager.beginTransaction();
-
         List<EngineRotorPair> availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
 
-        processedComponentRepository.storeEntities(availableEngineRotorPairs);
-
-        txManager.commit();
+        repository.storeEntities(availableEngineRotorPairs);
     }
 }

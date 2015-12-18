@@ -23,23 +23,8 @@ public class Main {
     private static final AppManager appManager = injector.getInstance(AppManager.class);
 
     public static void main(String[] argv) throws MzsCoreException {
-        registerShutdownHook();
+        appManager.registerShutdownHook(assemblyRobot::stop);
 
         assemblyRobot.run();
-    }
-
-    private static void registerShutdownHook() {
-        Thread mainThread = Thread.currentThread();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    assemblyRobot.stop();
-                    try {
-                        mainThread.join();
-                    } catch (InterruptedException ignore) {
-                    }
-
-                    appManager.shutdown();
-                })
-        );
     }
 }

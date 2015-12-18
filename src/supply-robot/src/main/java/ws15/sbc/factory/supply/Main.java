@@ -5,8 +5,7 @@ import com.google.inject.Injector;
 import ws15.sbc.factory.common.CommonModule;
 import ws15.sbc.factory.common.app.AppManager;
 import ws15.sbc.factory.common.dto.factory.*;
-import ws15.sbc.factory.common.repository.RawComponentRepository;
-import ws15.sbc.factory.common.repository.TxManager;
+import ws15.sbc.factory.common.repository.Repository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,10 +40,9 @@ public class Main {
         Injector injector = Guice.createInjector(new CommonModule());
 
         RawComponentFactory rawComponentFactory = rawComponentFactoryMap.get(componentType);
-        RawComponentRepository rawComponentRepository = injector.getInstance(RawComponentRepository.class);
-        TxManager txManager = injector.getInstance(TxManager.class);
+        Repository repository = injector.getInstance(Repository.class);
 
-        new SupplyRobot(robotId, rawComponentRepository, rawComponentFactory, txManager, quantity, interval).run();
+        new SupplyRobot(robotId, repository, rawComponentFactory, quantity, interval).run();
 
         injector.getInstance(AppManager.class).shutdown();
     }

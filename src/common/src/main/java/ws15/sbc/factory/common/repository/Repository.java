@@ -5,15 +5,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public interface Repository<Entity extends Serializable> {
+public interface Repository {
 
-    void storeEntity(Entity entity);
+    void storeEntity(Serializable entity);
 
-    void storeEntities(List<? extends Entity> entities);
+    void storeEntities(List<? extends Serializable> entities);
 
-    <T extends Entity> Optional<T> takeOne(Class<T> clazz);
+    <T extends Serializable> Optional<T> takeOne(EntityMatcher<T> matcher);
 
-    void onEntityStored(Consumer<Entity> consumer);
+    <T extends Serializable> Optional<List<T>> take(EntityMatcher<T> matcher, int count);
 
-    void onEntityTaken(Consumer<Entity> consumer);
+    <T extends Serializable> void onEntityStored(EntityMatcher<T> matcher, Consumer<T> consumer);
+
+    <T extends Serializable> void onEntityTaken(EntityMatcher<T> matcher, Consumer<T> consumer);
 }
