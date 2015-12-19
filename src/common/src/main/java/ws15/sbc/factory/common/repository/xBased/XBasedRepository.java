@@ -1,7 +1,7 @@
 package ws15.sbc.factory.common.repository.xBased;
 
+import com.google.common.base.Preconditions;
 import com.rabbitmq.client.*;
-import org.apache.commons.lang.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.dto.*;
@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.collections.ListUtils.synchronizedList;
+import static org.apache.commons.lang.SerializationUtils.deserialize;
 import static org.apache.commons.lang.SerializationUtils.serialize;
 import static ws15.sbc.factory.common.repository.xBased.Event.ActionType.STORED;
 import static ws15.sbc.factory.common.repository.xBased.Event.ActionType.TAKEN;
@@ -64,22 +65,24 @@ public class XBasedRepository implements Repository {
     private void initializeQueues() {
         getQueueTypes()
                 .map(this::getQueueNameFor)
-                .forEach(it -> {
-                    log.info("Declaring queue {} bound to exchange {}", it, exchange);
-
-                    try {
-                        channel.queueDeclare(it, false, false, false, null);
-
-                        channel.queueBind(it, exchange, it);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+                .forEach(this::declareQueue);
     }
 
     private Stream<Class<? extends Component>> getQueueTypes() {
         return asList(Engine.class, Rotor.class, Casing.class, ControlUnit.class,
                 EngineRotorPair.class, Carcase.class, Drone.class).stream();
+    }
+
+    private void declareQueue(String queue) {
+        log.info("Declaring queue {} bound to exchange {}", queue, exchange);
+
+        try {
+            channel.queueDeclare(queue, false, false, false, null);
+
+            channel.queueBind(queue, exchange, queue);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -92,10 +95,6 @@ public class XBasedRepository implements Repository {
         commitIfImplicitTransaction();
     }
 
-    private String getQueueNameFor(Class<? extends Serializable> entityClass) {
-        return entityClass.getSimpleName();
-    }
-
     private void publish(byte[] content, String... routingKeys) {
         try {
             for (String routingKey : routingKeys) {
@@ -104,6 +103,10 @@ public class XBasedRepository implements Repository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getQueueNameFor(Class<? extends Serializable> entityClass) {
+        return entityClass.getSimpleName();
     }
 
     private void notifyAction(Serializable entity, Event.ActionType actionType) {
@@ -124,6 +127,8 @@ public class XBasedRepository implements Repository {
 
     @Override
     public <T extends Serializable> Optional<T> takeOne(EntityMatcher<T> matcher) {
+        Preconditions.checkState(txManager.isTransactionActive(), "takeOne requires active transaction");
+
         log.info("Getting 1 entity matching {}", matcher);
 
         Optional<T> entity = getFirstMatching(matcher);
@@ -136,42 +141,55 @@ public class XBasedRepository implements Repository {
 
         notifyAction(entity.get(), TAKEN);
 
-        commitIfImplicitTransaction();
-
         return entity;
     }
 
     private <T extends Serializable> Optional<T> getFirstMatching(EntityMatcher<T> matcher) {
-        GetResponse response;
+        for (GetResponse response = getNextMatching(matcher); response != null; response = getNextMatching(matcher)) {
+            Serializable entity = (Serializable) deserialize(response.getBody());
 
-        do {
-            try {
-                response = channel.basicGet(getQueueNameFor(matcher.getEntityClass()), false);
+            if (matcher.matches(entity)) {
+                ackGetResponse(response);
 
-                if (response != null) {
-                    Serializable entity = (Serializable) SerializationUtils.deserialize(response.getBody());
-                    if (matcher.matches(entity)) {
-                        channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
-
-                        return Optional.of((T) entity); //guarded by matcher
-                    } else {
-                        channel.basicNack(response.getEnvelope().getDeliveryTag(), false, true);
-                    }
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                return Optional.of((T) entity); //guarded by matcher
+            } else {
+                log.info("Entity {} not matching {}. It will be requeued", entity, matcher);
+                nackGetResponse(response);
             }
-        } while (response != null);
+        }
 
         return Optional.empty();
     }
 
+    private <T extends Serializable> GetResponse getNextMatching(EntityMatcher<T> matcher) {
+        try {
+            return channel.basicGet(getQueueNameFor(matcher.getEntityClass()), false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void ackGetResponse(GetResponse response) {
+        try {
+            channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void nackGetResponse(GetResponse response) {
+        try {
+            channel.basicNack(response.getEnvelope().getDeliveryTag(), false, true);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public <T extends Serializable> Optional<List<T>> take(EntityMatcher<T> matcher, int count) {
-        boolean isTransactionActive = txManager.isTransactionActive();
-        if (!isTransactionActive) {
-            txManager.beginTransaction();
-        }
+        Preconditions.checkState(txManager.isTransactionActive(), "take requires active transaction");
+
+        log.info("Taking {} entities matching {}", count, matcher);
 
         List<T> entities = new ArrayList<>();
 
@@ -179,17 +197,10 @@ public class XBasedRepository implements Repository {
             Optional<T> entity = takeOne(matcher);
 
             if (!entity.isPresent()) {
-                if (!isTransactionActive) {
-                    txManager.rollback();
-                }
                 return Optional.empty();
-            } else {
-                entities.add(entity.get());
             }
-        }
 
-        if (!isTransactionActive) {
-            txManager.commit();
+            entities.add(entity.get());
         }
 
         return Optional.of(entities);
@@ -238,7 +249,7 @@ public class XBasedRepository implements Repository {
         return new DefaultConsumer(channel) {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-                Event event = (Event) SerializationUtils.deserialize(body);
+                Event event = (Event) deserialize(body);
 
                 log.info("Queue consumer woken up for {} with action {}", event.getEntity(), event.getActionType());
 
