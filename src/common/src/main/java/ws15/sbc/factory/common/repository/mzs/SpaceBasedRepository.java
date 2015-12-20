@@ -23,6 +23,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
+import static org.mozartspaces.core.MzsConstants.RequestTimeout.ZERO;
 
 @Singleton
 public class SpaceBasedRepository implements Repository {
@@ -122,6 +123,21 @@ public class SpaceBasedRepository implements Repository {
         } catch (CountNotMetException | MzsTimeoutException e) {
             log.warn("Failed to take entity from container");
             return Optional.empty();
+        } catch (MzsCoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public int count(EntityMatcher<? extends Serializable> matcher) {
+        Selector selector = QueryCoordinator.newSelector(matcher.mapToMzsQuery(), Selector.COUNT_MAX);
+
+        try {
+            int nEntities = capi.test(cref, selector, ZERO, txManager.currentTransaction());
+
+            log.info("Counted {} entities matching {}", nEntities, matcher);
+
+            return nEntities;
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }

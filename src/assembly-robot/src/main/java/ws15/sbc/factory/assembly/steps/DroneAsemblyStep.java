@@ -2,10 +2,10 @@ package ws15.sbc.factory.assembly.steps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.dto.Carcase;
 import ws15.sbc.factory.common.dto.Drone;
 import ws15.sbc.factory.common.dto.EngineRotorPair;
+import ws15.sbc.factory.common.repository.EntityMatcher;
 import ws15.sbc.factory.common.repository.Repository;
 import ws15.sbc.factory.common.repository.TxManager;
 import ws15.sbc.factory.common.utils.OperationUtils;
@@ -15,8 +15,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Collections.emptyList;
 
 @Singleton
 public class DroneAsemblyStep implements AssemblyStep {
@@ -30,68 +28,46 @@ public class DroneAsemblyStep implements AssemblyStep {
     private String robotId;
 
     @Inject
-    private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
-    @Inject
     private Repository repository;
     @Inject
     private TxManager txManager;
 
-    private List<EngineRotorPair> availableEngineRotorPairs = emptyList();
+    private Optional<List<EngineRotorPair>> availableEngineRotorPairs = Optional.empty();
     private Optional<Carcase> availableCarcase = Optional.empty();
 
     @Override
     public void performStep() {
         log.info("Performing drone assembly step");
 
-        acquireComponentsFromLocalStorage();
-
         txManager.beginTransaction();
+
+        acquireComponentsFromInventory();
 
         if (itCanAssembleDrone()) {
             assembleDroneAndStoreItInInventory();
+            txManager.commit();
         } else {
             log.info("Insufficient resources to assemble a complete drone");
-            storeAvailableComponentsInInventoryForFutureUse();
+            txManager.rollback();
         }
 
-        txManager.commit();
     }
 
-    private void acquireComponentsFromLocalStorage() {
-        availableEngineRotorPairs = assemblyRobotLocalStorage.consumeEngineRotorPairs();
-        availableCarcase = assemblyRobotLocalStorage.consumeCarcase();
+    private void acquireComponentsFromInventory() {
+        availableEngineRotorPairs = repository.take(EntityMatcher.of(EngineRotorPair.class), N_REQUIRED_ENGINE_ROTOR_PAIRS);
+        availableCarcase = repository.takeOne(EntityMatcher.of(Carcase.class));
     }
 
     private boolean itCanAssembleDrone() {
-        return availableEngineRotorPairs.size() == N_REQUIRED_ENGINE_ROTOR_PAIRS &&
-                availableCarcase.isPresent();
+        return availableEngineRotorPairs.isPresent() && availableCarcase.isPresent();
     }
 
     private void assembleDroneAndStoreItInInventory() {
         log.info("Assembling drone and storing it in inventory");
 
-        Drone drone = new Drone(robotId, availableEngineRotorPairs, availableCarcase.get());
+        Drone drone = new Drone(robotId, availableEngineRotorPairs.get(), availableCarcase.get());
         OperationUtils.simulateDelay(1000);
 
-        clearAvailableComponents();
-
         repository.storeEntity(drone);
-    }
-
-    private void clearAvailableComponents() {
-        availableEngineRotorPairs = emptyList();
-        availableCarcase = Optional.empty();
-    }
-
-    private void storeAvailableComponentsInInventoryForFutureUse() {
-        log.info("Storing available engine rotor pairs and carcase in inventory, for future use");
-
-        if (availableEngineRotorPairs.size() > 0) {
-            repository.storeEntities(availableEngineRotorPairs);
-        }
-
-        availableCarcase.ifPresent(carcase -> repository.storeEntity(carcase));
-
-        clearAvailableComponents();
     }
 }

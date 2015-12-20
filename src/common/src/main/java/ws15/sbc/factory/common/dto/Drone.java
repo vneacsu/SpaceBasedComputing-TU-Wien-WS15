@@ -6,6 +6,9 @@ import java.util.List;
 
 public class Drone extends ProcessedComponent {
 
+    public static final int N_REQUIRED_CARCASES = 1;
+    public static final int N_REQUIRED_ENGINE_ROTOR_PAIRS = 3;
+
     public static final String IS_CALIBRATED_FIELD = "calibrated";
     public static final String TESTED_BY_FIELD = "testedBy";
     public static final String IS_GOOD_DRONE_FIELD = "goodDrone";

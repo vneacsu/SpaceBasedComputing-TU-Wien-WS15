@@ -145,7 +145,7 @@ public class XBasedRepository implements Repository {
     }
 
     private <T extends Serializable> Optional<T> getFirstMatching(EntityMatcher<T> matcher) {
-        for (GetResponse response = getNextMatching(matcher); response != null; response = getNextMatching(matcher)) {
+        for (GetResponse response = getNextPotentialMatching(matcher); response != null; response = getNextPotentialMatching(matcher)) {
             Serializable entity = (Serializable) deserialize(response.getBody());
 
             if (matcher.matches(entity)) {
@@ -161,7 +161,7 @@ public class XBasedRepository implements Repository {
         return Optional.empty();
     }
 
-    private <T extends Serializable> GetResponse getNextMatching(EntityMatcher<T> matcher) {
+    private <T extends Serializable> GetResponse getNextPotentialMatching(EntityMatcher<T> matcher) {
         try {
             return channel.basicGet(getQueueNameFor(matcher.getEntityClass()), false);
         } catch (IOException e) {
@@ -204,6 +204,28 @@ public class XBasedRepository implements Repository {
         }
 
         return Optional.of(entities);
+    }
+
+    @Override
+    public int count(EntityMatcher<? extends Serializable> matcher) {
+        Preconditions.checkState(!txManager.isTransactionActive(), "Count should not run in transaction!");
+        int count = 0;
+
+        for (GetResponse response = getNextPotentialMatching(matcher); response != null; response = getNextPotentialMatching(matcher)) {
+            nackGetResponse(response);
+
+            Serializable entity = (Serializable) deserialize(response.getBody());
+
+            if (matcher.matches(entity)) {
+                count++;
+            }
+        }
+
+        txManager.commit();
+
+        log.info("Counted {} entities matching {}", count, matcher);
+
+        return count;
     }
 
     @Override

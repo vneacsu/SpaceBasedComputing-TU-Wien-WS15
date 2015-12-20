@@ -2,7 +2,6 @@ package ws15.sbc.factory.assembly.steps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.assembly.AssemblyRobotLocalStorage;
 import ws15.sbc.factory.common.dto.Carcase;
 import ws15.sbc.factory.common.dto.Casing;
 import ws15.sbc.factory.common.dto.ControlUnit;
@@ -16,6 +15,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Optional;
 
+import static ws15.sbc.factory.common.dto.Drone.N_REQUIRED_CARCASES;
+
 @Singleton
 public class CarcaseAssemblyStep implements AssemblyStep {
 
@@ -28,44 +29,34 @@ public class CarcaseAssemblyStep implements AssemblyStep {
     private TxManager txManager;
     @Inject
     private Repository repository;
-    @Inject
-    private AssemblyRobotLocalStorage assemblyRobotLocalStorage;
 
     @Override
     public void performStep() {
         log.info("Performing carcase assembly step");
 
+        if (hasEnoughCarcases()) {
+            log.info("Already have enough carcases");
+            return;
+        }
+
         txManager.beginTransaction();
 
-        Optional<Carcase> carcase = acquireOrAssembleCarcase();
+        Optional<Carcase> carcase = assembleNewCarcase();
 
         if (carcase.isPresent()) {
-            log.info("Carcase successfully acquired/assembled");
-            assemblyRobotLocalStorage.storeCarcase(carcase.get());
+            log.info("Carcase successfully assembled");
+            repository.storeEntity(carcase.get());
 
             txManager.commit();
         } else {
-            log.info("Carcase could have not been acquired/assembled");
+            log.info("Carcase could have not been assembled");
 
             txManager.rollback();
         }
     }
 
-    private Optional<Carcase> acquireOrAssembleCarcase() {
-        Optional<Carcase> carcase = acquireCarcaseFromInventory();
-
-        if (!carcase.isPresent()) {
-            log.info("No carcase found in inventory");
-            carcase = assembleNewCarcase();
-        }
-
-        return carcase;
-    }
-
-    private Optional<Carcase> acquireCarcaseFromInventory() {
-        log.info("Trying to acquire carcase from inventory");
-
-        return repository.takeOne(EntityMatcher.of(Carcase.class));
+    private boolean hasEnoughCarcases() {
+        return repository.count(EntityMatcher.of(Carcase.class)) >= N_REQUIRED_CARCASES;
     }
 
     private Optional<Carcase> assembleNewCarcase() {
