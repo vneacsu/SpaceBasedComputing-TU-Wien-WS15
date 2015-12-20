@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="ws15.sbc.factory.ui.ContractsTabController">
+    <children>
+        <GridPane hgap="10" vgap="10" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                  AnchorPane.topAnchor="0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS"/>
+            </rowConstraints>
+            <children>
+                <BorderPane prefHeight="200.0" prefWidth="200.0">
+                    <top>
+                        <Label styleClass="h1" text="Contracts" BorderPane.alignment="CENTER"/>
+                    </top>
+                    <center>
+                        <ListView fx:id="contractsListView" prefHeight="200.0" prefWidth="200.0"
+                                  BorderPane.alignment="CENTER"/>
+                    </center>
+                </BorderPane>
+                <GridPane GridPane.columnIndex="1" vgap="10" hgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="200.0"/>
+                        <ColumnConstraints hgrow="NEVER" minWidth="10.0" prefWidth="200.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="NEVER"/>
+                    </rowConstraints>
+                    <children>
+                        <Button mnemonicParsing="false" text="Add contract" GridPane.rowIndex="3"
+                                onMouseClicked="#onAddContract"/>
+                        <Label text="Number of drones:"/>
+                        <Label text="Type of casing:" GridPane.rowIndex="1"/>
+                        <Label text="Color of casing:" GridPane.rowIndex="2"/>
+                        <TextField fx:id="nDronesTextField" GridPane.columnIndex="1"/>
+                        <ComboBox fx:id="casingTypeCombo" prefWidth="200.0" GridPane.columnIndex="1"
+                                  GridPane.rowIndex="1"/>
+                        <ComboBox fx:id="casingColorCombo" prefWidth="200.0" GridPane.columnIndex="1"
+                                  GridPane.rowIndex="2"/>
+                    </children>
+                </GridPane>
+            </children>
+        </GridPane>
+    </children>
+</AnchorPane>
