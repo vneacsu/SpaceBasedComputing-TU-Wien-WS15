@@ -56,7 +56,7 @@ public class CarcaseAssemblyStep implements AssemblyStep {
     }
 
     private boolean hasEnoughCarcases() {
-        return repository.count(EntityMatcher.of(Carcase.class)) >= N_REQUIRED_CARCASES;
+        return repository.count(EntityMatcher.of(Carcase.class), N_REQUIRED_CARCASES) >= N_REQUIRED_CARCASES;
     }
 
     private Optional<Carcase> assembleNewCarcase() {

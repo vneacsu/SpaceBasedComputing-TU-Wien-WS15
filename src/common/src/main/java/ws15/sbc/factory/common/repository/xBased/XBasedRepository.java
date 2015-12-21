@@ -207,11 +207,13 @@ public class XBasedRepository implements Repository {
     }
 
     @Override
-    public int count(EntityMatcher<? extends Serializable> matcher) {
+    public int count(EntityMatcher<? extends Serializable> matcher, int nMaxEntities) {
         Preconditions.checkState(!txManager.isTransactionActive(), "Count should not run in transaction!");
         int count = 0;
 
-        for (GetResponse response = getNextPotentialMatching(matcher); response != null; response = getNextPotentialMatching(matcher)) {
+        for (GetResponse response = getNextPotentialMatching(matcher);
+             response != null && count < nMaxEntities;
+             response = getNextPotentialMatching(matcher)) {
             nackGetResponse(response);
 
             Serializable entity = (Serializable) deserialize(response.getBody());
@@ -223,7 +225,7 @@ public class XBasedRepository implements Repository {
 
         txManager.commit();
 
-        log.info("Counted {} entities matching {}", count, matcher);
+        log.info("Counted at least {} entities matching {}", count, matcher);
 
         return count;
     }

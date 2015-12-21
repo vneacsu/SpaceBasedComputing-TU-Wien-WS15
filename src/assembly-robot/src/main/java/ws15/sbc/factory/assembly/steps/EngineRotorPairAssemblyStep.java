@@ -56,7 +56,7 @@ public class EngineRotorPairAssemblyStep implements AssemblyStep {
     }
 
     private int getNumberOfEngineRotorPairsToAssemble() {
-        int nAvailableEngineRotorPairs = repository.count(EntityMatcher.of(EngineRotorPair.class));
+        int nAvailableEngineRotorPairs = repository.count(EntityMatcher.of(EngineRotorPair.class), N_REQUIRED_ENGINE_ROTOR_PAIRS);
 
         return max(0, N_REQUIRED_ENGINE_ROTOR_PAIRS - nAvailableEngineRotorPairs);
     }
