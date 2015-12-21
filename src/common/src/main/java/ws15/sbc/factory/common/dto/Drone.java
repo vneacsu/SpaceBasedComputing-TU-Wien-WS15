@@ -9,13 +9,12 @@ public class Drone extends ProcessedComponent {
     public static final int N_REQUIRED_CARCASES = 1;
     public static final int N_REQUIRED_ENGINE_ROTOR_PAIRS = 3;
 
-    public static final String IS_CALIBRATED_FIELD = "calibrated";
+    public static final String IS_CALIBRATED_PATH = "carcase.calibratedBy";
     public static final String TESTED_BY_FIELD = "testedBy";
     public static final String IS_GOOD_DRONE_FIELD = "goodDrone";
 
     private final List<EngineRotorPair> engineRotorPairs;
     private final Carcase carcase;
-    private boolean calibrated = false;
     private String testedBy;
     private boolean goodDrone = false;
 
@@ -27,14 +26,9 @@ public class Drone extends ProcessedComponent {
     }
 
     public void calibrate(String calibratedBy, int calibrationSum) {
-        Preconditions.checkState(!isCalibrated(), "Drone already calibrated!");
+        Preconditions.checkState(!carcase.isCalibrated(), "Drone already calibrated!");
 
         carcase.calibrate(calibratedBy, calibrationSum);
-        this.calibrated = true;
-    }
-
-    public boolean isCalibrated() {
-        return calibrated;
     }
 
     public void setTestResult(String testedBy, boolean isGoodDrone) {

@@ -16,7 +16,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static ws15.sbc.factory.common.dto.Drone.IS_CALIBRATED_FIELD;
+import static ws15.sbc.factory.common.dto.Drone.IS_CALIBRATED_PATH;
 import static ws15.sbc.factory.common.dto.ProcessedComponent.CALIBRATED_BY_FIELD;
 
 public class CalibrateRobot {
@@ -95,7 +95,7 @@ public class CalibrateRobot {
     }
 
     private EntityMatcher<Drone> notCalibratedDroneMatcher() {
-        return EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, false);
+        return EntityMatcher.of(Drone.class).withNullField(IS_CALIBRATED_PATH);
     }
 
     private void calibrateDrone(Drone drone) {

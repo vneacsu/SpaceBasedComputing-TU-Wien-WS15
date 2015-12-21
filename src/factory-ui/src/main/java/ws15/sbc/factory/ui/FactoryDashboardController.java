@@ -58,11 +58,11 @@ public class FactoryDashboardController implements Initializable {
         repository.onEntityStored(EntityMatcher.of(Carcase.class), it -> Platform.runLater(() -> model.getProcessedComponents().add(it)));
         repository.onEntityTaken(EntityMatcher.of(Carcase.class), it -> Platform.runLater(() -> model.getProcessedComponents().remove(it)));
 
-        repository.onEntityStored(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, false), it -> Platform.runLater(() -> model.getDrones().add(it)));
-        repository.onEntityTaken(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, false), it -> Platform.runLater(() -> model.getDrones().remove(it)));
+        repository.onEntityStored(EntityMatcher.of(Drone.class).withNullField(IS_CALIBRATED_PATH), it -> Platform.runLater(() -> model.getDrones().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(Drone.class).withNullField(IS_CALIBRATED_PATH), it -> Platform.runLater(() -> model.getDrones().remove(it)));
 
-        repository.onEntityStored(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, true).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().add(it)));
-        repository.onEntityTaken(EntityMatcher.of(Drone.class).withFieldEqualTo(IS_CALIBRATED_FIELD, true).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().remove(it)));
+        repository.onEntityStored(EntityMatcher.of(Drone.class).withNotNullField(IS_CALIBRATED_PATH).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().add(it)));
+        repository.onEntityTaken(EntityMatcher.of(Drone.class).withNotNullField(IS_CALIBRATED_PATH).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().remove(it)));
 
         repository.onEntityStored(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, true), it -> Platform.runLater(() -> model.getGoodDrones().add(it)));
         repository.onEntityTaken(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, true), it -> Platform.runLater(() -> model.getGoodDrones().remove(it)));

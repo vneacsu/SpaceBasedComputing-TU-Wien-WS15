@@ -13,7 +13,7 @@ import javax.inject.Named;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static ws15.sbc.factory.common.dto.Drone.IS_CALIBRATED_FIELD;
+import static ws15.sbc.factory.common.dto.Drone.IS_CALIBRATED_PATH;
 import static ws15.sbc.factory.common.dto.Drone.TESTED_BY_FIELD;
 
 public class LogisticsRobot {
@@ -58,7 +58,7 @@ public class LogisticsRobot {
 
     private EntityMatcher<Drone> calibratedNotTestedDroneMatcher() {
         return EntityMatcher.of(Drone.class)
-                .withFieldEqualTo(IS_CALIBRATED_FIELD, true)
+                .withNotNullField(IS_CALIBRATED_PATH)
                 .withNullField(TESTED_BY_FIELD);
     }
 

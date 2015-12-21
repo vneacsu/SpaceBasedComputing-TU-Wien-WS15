@@ -62,11 +62,11 @@ public class EntityMatcher<Entity extends Serializable> {
         matchmakers.add(Property.forClass(entityClass).exists());
 
         matchmakers.addAll(fieldEqualRules.entrySet().stream()
-                .map(it -> Property.forClass(entityClass, it.getKey()).equalTo(it.getValue()))
+                .map(it -> Property.forClass(entityClass, it.getKey().split("\\.")).equalTo(it.getValue()))
                 .collect(Collectors.toList()));
 
         matchmakers.addAll(fieldNotEqualRules.entrySet().stream()
-                .map(it -> Property.forClass(entityClass, it.getKey()).notEqualTo(it.getValue()))
+                .map(it -> Property.forClass(entityClass, it.getKey().split("\\.")).notEqualTo(it.getValue()))
                 .collect(Collectors.toList()));
 
         return matchmakers.toArray(new Matchmaker[matchmakers.size()]);
@@ -85,10 +85,12 @@ public class EntityMatcher<Entity extends Serializable> {
                 .allMatch(it -> entityFieldMatches(entity, it.getKey(), it.getValue()));
     }
 
-    private boolean entityFieldMatches(Serializable entity, String field, Object expectedValue) {
-        Object actualValue;
+    private boolean entityFieldMatches(Serializable entity, String fieldPath, Object expectedValue) {
+        Object actualValue = entity;
         try {
-            actualValue = PropertyUtils.getProperty(entity, field);
+            for (String field : fieldPath.split("\\.")) {
+                actualValue = PropertyUtils.getProperty(actualValue, field);
+            }
         } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             return false;
         }
