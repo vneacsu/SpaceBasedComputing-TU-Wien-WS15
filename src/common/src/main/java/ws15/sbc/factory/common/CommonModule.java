@@ -1,6 +1,9 @@
 package ws15.sbc.factory.common;
 
 import com.google.inject.PrivateModule;
+import com.google.inject.Singleton;
+import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.core.HazelcastInstance;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -78,5 +81,9 @@ public class CommonModule extends PrivateModule {
         bind(AppManager.class).to(XBasedAppManager.class);
         bind(Repository.class).to(XBasedRepository.class);
         bind(TxManager.class).to(XBasedTxManager.class);
+
+        System.setProperty("hazelcast.logging.type", "none");
+
+        bind(HazelcastInstance.class).toProvider(() -> HazelcastClient.newHazelcastClient()).in(Singleton.class);
     }
 }

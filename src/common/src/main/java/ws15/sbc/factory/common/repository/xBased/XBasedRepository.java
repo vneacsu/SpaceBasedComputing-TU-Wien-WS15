@@ -1,6 +1,7 @@
 package ws15.sbc.factory.common.repository.xBased;
 
-import com.google.common.base.Preconditions;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ILock;
 import com.rabbitmq.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,18 +36,20 @@ public class XBasedRepository implements Repository {
 
     private final Channel channel;
     private final XBasedTxManager txManager;
+    private final HazelcastInstance hazelcastInstance;
 
     private Optional<String> eventQueueName = Optional.empty();
     private List<ConditionalConsumerDecorator<? extends Serializable>> storedEventConsumers = synchronizedList(new ArrayList<>());
     private List<ConditionalConsumerDecorator<? extends Serializable>> takenEventConsumers = synchronizedList(new ArrayList<>());
 
     @Inject
-    public XBasedRepository(Channel channel, XBasedTxManager txManager) {
+    public XBasedRepository(Channel channel, XBasedTxManager txManager, HazelcastInstance hazelcastInstance) {
         exchange = "factory-exchange";
         eventsRoutingKey = "factory-events";
 
         this.channel = channel;
         this.txManager = txManager;
+        this.hazelcastInstance = hazelcastInstance;
 
         try {
             initializeExchange();
@@ -127,9 +130,9 @@ public class XBasedRepository implements Repository {
 
     @Override
     public <T extends Serializable> Optional<T> takeOne(EntityMatcher<T> matcher) {
-        Preconditions.checkState(txManager.isTransactionActive(), "takeOne requires active transaction");
-
         log.info("Getting 1 entity matching {}", matcher);
+
+        enterCriticalSectionFor(matcher);
 
         Optional<T> entity = getFirstMatching(matcher);
         if (!entity.isPresent()) {
@@ -142,6 +145,16 @@ public class XBasedRepository implements Repository {
         notifyAction(entity.get(), TAKEN);
 
         return entity;
+    }
+
+    private void enterCriticalSectionFor(EntityMatcher<? extends Serializable> matcher) {
+        String lockKey = "lock-" + getQueueNameFor(matcher.getEntityClass());
+        ILock lock = hazelcastInstance.getLock(lockKey);
+
+        if (!lock.isLockedByCurrentThread()) {
+            lock.lock();
+            txManager.registerTxHook(lock::unlock);
+        }
     }
 
     private <T extends Serializable> Optional<T> getFirstMatching(EntityMatcher<T> matcher) {
@@ -187,9 +200,9 @@ public class XBasedRepository implements Repository {
 
     @Override
     public <T extends Serializable> Optional<List<T>> take(EntityMatcher<T> matcher, int count) {
-        Preconditions.checkState(txManager.isTransactionActive(), "take requires active transaction");
-
         log.info("Taking {} entities matching {}", count, matcher);
+
+        enterCriticalSectionFor(matcher);
 
         List<T> entities = new ArrayList<>();
 
@@ -207,12 +220,14 @@ public class XBasedRepository implements Repository {
     }
 
     @Override
-    public int count(EntityMatcher<? extends Serializable> matcher, int nMaxEntities) {
-        Preconditions.checkState(!txManager.isTransactionActive(), "Count should not run in transaction!");
+    public int count(EntityMatcher<? extends Serializable> matcher) {
+        txManager.beginTransaction();
         int count = 0;
 
+        enterCriticalSectionFor(matcher);
+
         for (GetResponse response = getNextPotentialMatching(matcher);
-             response != null && count < nMaxEntities;
+             response != null;
              response = getNextPotentialMatching(matcher)) {
             nackGetResponse(response);
 

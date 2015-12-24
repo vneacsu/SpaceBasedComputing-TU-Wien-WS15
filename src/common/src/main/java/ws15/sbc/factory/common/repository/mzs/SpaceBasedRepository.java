@@ -129,15 +129,13 @@ public class SpaceBasedRepository implements Repository {
     }
 
     @Override
-    public int count(EntityMatcher<? extends Serializable> matcher, int nMaxEntities) {
+    public int count(EntityMatcher<? extends Serializable> matcher) {
         Selector selector = QueryCoordinator.newSelector(matcher.mapToMzsQuery(), Selector.COUNT_MAX);
 
         try {
             int nEntities = capi.test(cref, selector, ZERO, txManager.currentTransaction());
 
-            nEntities = Math.min(nEntities, nMaxEntities);
-
-            log.info("Counted at least {} entities matching {}", nEntities, matcher);
+            log.info("Counted {} entities matching {}", nEntities, matcher);
 
             return nEntities;
         } catch (MzsCoreException e) {

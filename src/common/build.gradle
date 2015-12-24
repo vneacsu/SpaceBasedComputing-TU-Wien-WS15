@@ -1,0 +1,4 @@
+dependencies {
+    compile 'com.hazelcast:hazelcast-client:3.5.4'
+    compile 'com.hazelcast:hazelcast:3.5.4'
+}
