@@ -31,7 +31,7 @@ public class SpaceBasedRepository implements Repository {
     private static final Logger log = LoggerFactory.getLogger(SpaceBasedRepository.class);
 
     private static final String CONTAINER_NAME = "factory-container";
-    private static final int TAKE_TIMEOUT = 2 * 1000;
+    private static final int TIMEOUT = 2 * 1000;
 
     final private URI space;
     final private Capi capi;
@@ -117,12 +117,24 @@ public class SpaceBasedRepository implements Repository {
         Selector selector = QueryCoordinator.newSelector(matcher.mapToMzsQuery(), count);
 
         try {
-            List<T> entities = capi.take(cref, selector, TAKE_TIMEOUT, txManager.currentTransaction());
+            List<T> entities = capi.take(cref, selector, TIMEOUT, txManager.currentTransaction());
 
             return Optional.of(entities);
         } catch (CountNotMetException | MzsTimeoutException e) {
             log.warn("Failed to take entity from container");
             return Optional.empty();
+        } catch (MzsCoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public <T extends Serializable> List<T> readAll(EntityMatcher<T> matcher) {
+        //lockContainer with COUNT_ALL did not work...
+        Selector selector = QueryCoordinator.newSelector(matcher.mapToMzsQuery(), Selector.COUNT_MAX);
+
+        try {
+            return capi.read(cref, selector, ZERO, txManager.currentTransaction());
         } catch (MzsCoreException e) {
             throw new RuntimeException(e);
         }

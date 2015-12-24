@@ -15,6 +15,8 @@ public interface Repository {
 
     <T extends Serializable> Optional<List<T>> take(EntityMatcher<T> matcher, int count);
 
+    <T extends Serializable> List<T> readAll(EntityMatcher<T> matcher);
+
     int count(EntityMatcher<? extends Serializable> matcher);
 
     <T extends Serializable> void onEntityStored(EntityMatcher<T> matcher, Consumer<T> consumer);

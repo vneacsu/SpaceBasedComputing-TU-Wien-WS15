@@ -220,12 +220,11 @@ public class XBasedRepository implements Repository {
     }
 
     @Override
-    public int count(EntityMatcher<? extends Serializable> matcher) {
+    public <T extends Serializable> List<T> readAll(EntityMatcher<T> matcher) {
         txManager.beginTransaction();
-        int count = 0;
-
         enterCriticalSectionFor(matcher);
 
+        List<T> entities = new ArrayList<>();
         for (GetResponse response = getNextPotentialMatching(matcher);
              response != null;
              response = getNextPotentialMatching(matcher)) {
@@ -234,11 +233,20 @@ public class XBasedRepository implements Repository {
             Serializable entity = (Serializable) deserialize(response.getBody());
 
             if (matcher.matches(entity)) {
-                count++;
+                entities.add((T) entity); //guarded by matcher
             }
         }
 
         txManager.commit();
+
+        log.info("All entities matching {}: {}", matcher, entities);
+
+        return entities;
+    }
+
+    @Override
+    public int count(EntityMatcher<? extends Serializable> matcher) {
+        int count = readAll(matcher).size();
 
         log.info("Counted at least {} entities matching {}", count, matcher);
 
