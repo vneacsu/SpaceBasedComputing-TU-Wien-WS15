@@ -16,6 +16,7 @@ import ws15.sbc.factory.common.repository.Repository;
 import javax.inject.Inject;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static ws15.sbc.factory.common.dto.Drone.*;
@@ -64,11 +65,25 @@ public class FactoryDashboardController implements Initializable {
         repository.onEntityStored(EntityMatcher.of(Drone.class).withNotNullField(IS_CALIBRATED_PATH).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().add(it)));
         repository.onEntityTaken(EntityMatcher.of(Drone.class).withNotNullField(IS_CALIBRATED_PATH).withNullField(TESTED_BY_FIELD), it -> Platform.runLater(() -> model.getCalibratedDrones().remove(it)));
 
-        repository.onEntityStored(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, true), it -> Platform.runLater(() -> model.getGoodDrones().add(it)));
-        repository.onEntityTaken(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, true), it -> Platform.runLater(() -> model.getGoodDrones().remove(it)));
+        repository.onEntityStored(
+                EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, true),
+                it -> Platform.runLater(() -> replaceOrAdd(it, model.getGoodDrones()))
+        );
 
-        repository.onEntityStored(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, false), it -> Platform.runLater(() -> model.getBadDrones().add(it)));
-        repository.onEntityTaken(EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, false), it -> Platform.runLater(() -> model.getBadDrones().remove(it)));
+        repository.onEntityStored(
+                EntityMatcher.of(Drone.class).withNotNullField(TESTED_BY_FIELD).withFieldEqualTo(IS_GOOD_DRONE_FIELD, false),
+                it -> Platform.runLater(() -> replaceOrAdd(it, model.getBadDrones()))
+        );
+    }
+
+    private void replaceOrAdd(Drone drone, List<Drone> drones) {
+        int index = drones.indexOf(drone);
+
+        if (index < 0) {
+            drones.add(drone);
+        } else {
+            drones.set(index, drone);
+        }
     }
 
     private void initializeDroneListViewsListeners() {

@@ -93,9 +93,15 @@
                         <Label text="${model.selectedDrone.assembledBy}" GridPane.rowIndex="2"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Tested by:" GridPane.rowIndex="5"
+                        <Label styleClass="description-tag" text="Tested by:" GridPane.rowIndex="4"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.testedBy}" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                        <Label text="${model.selectedDrone.testedBy}" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                        <Label styleClass="description-tag" text="For contract:" GridPane.rowIndex="5"
+                               GridPane.columnIndex="0"/>
+                        <Label text="${model.selectedDrone.forContract}" GridPane.rowIndex="5"
+                               GridPane.columnIndex="1"/>
+
 
                         <Label styleClass="separation-tag" text="Carcase" GridPane.rowIndex="6"
                                GridPane.columnSpan="2"/>
@@ -118,25 +124,16 @@
                         <Label text="${model.selectedDrone.carcase.calibrationSum}" GridPane.rowIndex="10"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Casing ID:" GridPane.rowIndex="11"
+                        <Label styleClass="description-tag" text="Casing:" GridPane.rowIndex="11"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.carcase.casing.id}" GridPane.rowIndex="11"
+                        <Label text="${model.selectedDrone.carcase.casing}" GridPane.rowIndex="11"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Casing supplied by:" GridPane.rowIndex="12"
+                        <Label styleClass="description-tag" text="Control unit:" GridPane.rowIndex="13"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.carcase.casing.suppliedBy}" GridPane.rowIndex="12"
+                        <Label text="${model.selectedDrone.carcase.controlUnit}" GridPane.rowIndex="13"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Control unit ID:" GridPane.rowIndex="13"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.carcase.controlUnit.id}" GridPane.rowIndex="13"
-                               GridPane.columnIndex="1"/>
-
-                        <Label styleClass="description-tag" text="Control unit supplied by:" GridPane.rowIndex="14"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.carcase.controlUnit.suppliedBy}" GridPane.rowIndex="14"
-                               GridPane.columnIndex="1"/>
 
                         <Label styleClass="separation-tag" text="Engine rotor pair 1" GridPane.rowIndex="15"
                                GridPane.columnSpan="2"/>
@@ -160,26 +157,16 @@
                         <Label text="${model.selectedDrone.engineRotorPairs[0].calibrationValue}" GridPane.rowIndex="19"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Engine ID:" GridPane.rowIndex="20"
+                        <Label styleClass="description-tag" text="Engine:" GridPane.rowIndex="20"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[0].engine.id}" GridPane.rowIndex="20"
+                        <Label text="${model.selectedDrone.engineRotorPairs[0].engine}" GridPane.rowIndex="20"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Engine supplied by:" GridPane.rowIndex="21"
+                        <Label styleClass="description-tag" text="Rotor:" GridPane.rowIndex="22"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[0].engine.suppliedBy}"
-                               GridPane.rowIndex="21"
+                        <Label text="${model.selectedDrone.engineRotorPairs[0].rotor}" GridPane.rowIndex="22"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Rotor ID:" GridPane.rowIndex="22"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[0].rotor.id}" GridPane.rowIndex="22"
-                               GridPane.columnIndex="1"/>
-
-                        <Label styleClass="description-tag" text="Rotor supplied by:" GridPane.rowIndex="23"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[0].rotor.suppliedBy}" GridPane.rowIndex="23"
-                               GridPane.columnIndex="1"/>
 
                         <Label styleClass="separation-tag" text="Engine rotor pair 2" GridPane.rowIndex="24"
                                GridPane.columnSpan="2"/>
@@ -203,26 +190,16 @@
                         <Label text="${model.selectedDrone.engineRotorPairs[1].calibrationValue}" GridPane.rowIndex="28"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Engine ID:" GridPane.rowIndex="29"
+                        <Label styleClass="description-tag" text="Engine:" GridPane.rowIndex="29"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[1].engine.id}" GridPane.rowIndex="29"
+                        <Label text="${model.selectedDrone.engineRotorPairs[1].engine}" GridPane.rowIndex="29"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Engine supplied by:" GridPane.rowIndex="30"
+                        <Label styleClass="description-tag" text="Rotor:" GridPane.rowIndex="31"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[1].engine.suppliedBy}"
-                               GridPane.rowIndex="30"
+                        <Label text="${model.selectedDrone.engineRotorPairs[1].rotor}" GridPane.rowIndex="31"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Rotor ID:" GridPane.rowIndex="31"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[1].rotor.id}" GridPane.rowIndex="31"
-                               GridPane.columnIndex="1"/>
-
-                        <Label styleClass="description-tag" text="Rotor supplied by:" GridPane.rowIndex="32"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[1].rotor.suppliedBy}" GridPane.rowIndex="32"
-                               GridPane.columnIndex="1"/>
 
                         <Label styleClass="separation-tag" text="Engine rotor pair 3" GridPane.rowIndex="33"
                                GridPane.columnSpan="2"/>
@@ -246,25 +223,14 @@
                         <Label text="${model.selectedDrone.engineRotorPairs[2].calibrationValue}" GridPane.rowIndex="37"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Engine ID:" GridPane.rowIndex="38"
+                        <Label styleClass="description-tag" text="Engine:" GridPane.rowIndex="38"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[2].engine.id}" GridPane.rowIndex="38"
+                        <Label text="${model.selectedDrone.engineRotorPairs[2].engine}" GridPane.rowIndex="38"
                                GridPane.columnIndex="1"/>
 
-                        <Label styleClass="description-tag" text="Engine supplied by:" GridPane.rowIndex="39"
+                        <Label styleClass="description-tag" text="Rotor:" GridPane.rowIndex="40"
                                GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[2].engine.suppliedBy}"
-                               GridPane.rowIndex="39"
-                               GridPane.columnIndex="1"/>
-
-                        <Label styleClass="description-tag" text="Rotor ID:" GridPane.rowIndex="40"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[2].rotor.id}" GridPane.rowIndex="40"
-                               GridPane.columnIndex="1"/>
-
-                        <Label styleClass="description-tag" text="Rotor supplied by:" GridPane.rowIndex="41"
-                               GridPane.columnIndex="0"/>
-                        <Label text="${model.selectedDrone.engineRotorPairs[2].rotor.suppliedBy}" GridPane.rowIndex="41"
+                        <Label text="${model.selectedDrone.engineRotorPairs[2].rotor}" GridPane.rowIndex="40"
                                GridPane.columnIndex="1"/>
                     </GridPane>
                 </ScrollPane>

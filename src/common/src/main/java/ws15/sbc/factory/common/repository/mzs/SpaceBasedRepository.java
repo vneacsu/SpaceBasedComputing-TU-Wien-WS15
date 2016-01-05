@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.mozartspaces.core.MzsConstants.RequestTimeout.DEFAULT;
@@ -129,6 +130,11 @@ public class SpaceBasedRepository implements Repository {
     }
 
     @Override
+    public <T extends Serializable> List<T> takeAll(EntityMatcher<T> matcher) {
+        return take(matcher, Selector.COUNT_MAX).orElse(emptyList());
+    }
+
+    @Override
     public <T extends Serializable> List<T> readAll(EntityMatcher<T> matcher) {
         //lockContainer with COUNT_ALL did not work...
         Selector selector = QueryCoordinator.newSelector(matcher.mapToMzsQuery(), Selector.COUNT_MAX);
@@ -178,7 +184,7 @@ public class SpaceBasedRepository implements Repository {
         @SuppressWarnings("guarded by matcher")
         NotificationListener notificationListener = (source, operation, entries) -> entries.stream()
                 .filter(matcher::matches)
-                .forEach(e -> consumer.accept((T) e));
+                .forEach(e -> consumer.accept((T) e)); //guarded by matcher
 
         createNotificationFor(Operation.TAKE, notificationListener);
     }

@@ -71,9 +71,9 @@ public class XBasedRepository implements Repository {
                 .forEach(this::declareQueue);
     }
 
-    private Stream<Class<? extends Component>> getQueueTypes() {
+    private Stream<Class<? extends Serializable>> getQueueTypes() {
         return asList(Engine.class, Rotor.class, Casing.class, ControlUnit.class,
-                EngineRotorPair.class, Carcase.class, Drone.class).stream();
+                EngineRotorPair.class, Carcase.class, Drone.class, Contract.class).stream();
     }
 
     private void declareQueue(String queue) {
@@ -217,6 +217,22 @@ public class XBasedRepository implements Repository {
         }
 
         return Optional.of(entities);
+    }
+
+    @Override
+    public <T extends Serializable> List<T> takeAll(EntityMatcher<T> matcher) {
+        log.info("Taking all entities matching {}", matcher);
+
+        enterCriticalSectionFor(matcher);
+
+        List<T> entities = new ArrayList<>();
+        for (Optional<T> entity = takeOne(matcher); entity.isPresent(); entity = takeOne(matcher)) {
+            entities.add(entity.get());
+        }
+
+        log.info("Taken all entities matching {}: {}", matcher, entities);
+
+        return entities;
     }
 
     @Override

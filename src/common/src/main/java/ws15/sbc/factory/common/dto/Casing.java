@@ -30,6 +30,7 @@ public class Casing extends RawComponent {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
+                .add("id", getId())
                 .add("type", type)
                 .add("color", color)
                 .add("suppliedBy", getSuppliedBy())

@@ -12,11 +12,13 @@ public class Drone extends ProcessedComponent {
     public static final String IS_CALIBRATED_PATH = "carcase.calibratedBy";
     public static final String TESTED_BY_FIELD = "testedBy";
     public static final String IS_GOOD_DRONE_FIELD = "goodDrone";
+    public static final String FOR_CONTRACT_FIELD = "forContract";
 
     private final List<EngineRotorPair> engineRotorPairs;
     private final Carcase carcase;
     private String testedBy;
     private boolean goodDrone = false;
+    private String forContract = null;
 
     public Drone(String assembledBy, List<EngineRotorPair> engineRotorPairs, Carcase carcase) {
         super(assembledBy);
@@ -60,5 +62,13 @@ public class Drone extends ProcessedComponent {
 
     public boolean isGoodDrone() {
         return goodDrone;
+    }
+
+    public String getForContract() {
+        return forContract;
+    }
+
+    public void setForContract(String forContract) {
+        this.forContract = forContract;
     }
 }

@@ -1,5 +1,6 @@
 package ws15.sbc.factory.ui;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -11,7 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.dto.Casing;
 import ws15.sbc.factory.common.dto.Contract;
+import ws15.sbc.factory.common.repository.EntityMatcher;
+import ws15.sbc.factory.common.repository.Repository;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -35,6 +39,9 @@ public class ContractsTabController implements Initializable {
 
     private ObservableList<Contract> contracts = observableArrayList();
 
+    @Inject
+    private Repository repository;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         contractsListView.setItems(contracts);
@@ -46,6 +53,20 @@ public class ContractsTabController implements Initializable {
 
         casingColorCombo.setItems(observableArrayList(Casing.Color.values()));
         casingColorCombo.setValue(GRAY);
+
+        repository.onEntityStored(EntityMatcher.of(Contract.class), this::handleContractStored);
+    }
+
+    private void handleContractStored(Contract contract) {
+        Platform.runLater(() -> {
+            int index = contracts.indexOf(contract);
+
+            if (index >= 0) {
+                contracts.set(index, contract);
+            } else {
+                contracts.add(contract);
+            }
+        });
     }
 
     @FXML
@@ -57,6 +78,6 @@ public class ContractsTabController implements Initializable {
         Contract contract = new Contract(nDrones, type, color);
         log.info("Adding new contract {}", contract);
 
-        contracts.add(contract);
+        repository.storeEntity(contract);
     }
 }
