@@ -8,6 +8,9 @@ public class Casing extends RawComponent {
 
     private static final Random random = new Random();
 
+    public static final String COLOR_FIELD = "color";
+    public static final String TYPE_FIELD = "type";
+
     private final Type type = Type.getRandom();
     private Color color = Color.GRAY;
 
@@ -25,6 +28,10 @@ public class Casing extends RawComponent {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public void setRandomColorNoGray() {
+        this.color = Color.getRandomNoGray();
     }
 
     @Override
@@ -46,6 +53,11 @@ public class Casing extends RawComponent {
     }
 
     public enum Color {
-        GRAY, RED, GREEN, BLUE
+        GRAY, RED, GREEN, BLUE;
+
+        public static Color getRandomNoGray() {
+            int randomIndex = random.nextInt(values().length - 1) + 1; // no gray color
+            return values()[randomIndex];
+        }
     }
 }

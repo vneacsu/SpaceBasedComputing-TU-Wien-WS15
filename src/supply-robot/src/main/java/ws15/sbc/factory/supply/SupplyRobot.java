@@ -17,9 +17,11 @@ public class SupplyRobot {
     private final Integer quantity;
     private final Long interval;
 
-    public SupplyRobot(String robotId, Repository repository,
+    public SupplyRobot(String robotId,
+                       Repository repository,
                        RawComponentFactory rawComponentFactory,
-                       Integer quantity, Long interval) {
+                       Integer quantity,
+                       Long interval) {
         this.robotId = robotId;
         this.repository = repository;
         this.rawComponentFactory = rawComponentFactory;

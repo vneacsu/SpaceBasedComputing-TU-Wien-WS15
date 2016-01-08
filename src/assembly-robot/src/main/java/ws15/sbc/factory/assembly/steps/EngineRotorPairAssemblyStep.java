@@ -34,7 +34,8 @@ public class EngineRotorPairAssemblyStep implements AssemblyStep {
     public void performStep() {
         log.info("Performing engine rotor pair assembly step");
 
-        for (int i = 0; i < getNumberOfEngineRotorPairsToAssemble(); ++i) {
+        int numberOfEngineRotorPairsToAssemble = getNumberOfEngineRotorPairsToAssemble();
+        for (int i = 0; i < numberOfEngineRotorPairsToAssemble; ++i) {
             txManager.beginTransaction();
 
             Optional<EngineRotorPair> engineRotorPair = assembleEngineRotorPair();

@@ -48,6 +48,14 @@ public class Contract implements Serializable {
                 drone.getCarcase().getCasing().getColor() == casingColor;
     }
 
+    public Casing.Color getCasingColor() {
+        return casingColor;
+    }
+
+    public Casing.Type getCasingType() {
+        return casingType;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)

@@ -2,9 +2,7 @@ package ws15.sbc.factory.assembly.steps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ws15.sbc.factory.common.dto.Carcase;
-import ws15.sbc.factory.common.dto.Drone;
-import ws15.sbc.factory.common.dto.EngineRotorPair;
+import ws15.sbc.factory.common.dto.*;
 import ws15.sbc.factory.common.repository.EntityMatcher;
 import ws15.sbc.factory.common.repository.Repository;
 import ws15.sbc.factory.common.repository.TxManager;
@@ -55,7 +53,27 @@ public class DroneAsemblyStep implements AssemblyStep {
 
     private void acquireComponentsFromInventory() {
         availableEngineRotorPairs = repository.take(EntityMatcher.of(EngineRotorPair.class), N_REQUIRED_ENGINE_ROTOR_PAIRS);
-        availableCarcase = repository.takeOne(EntityMatcher.of(Carcase.class));
+        availableCarcase = getCarcase();
+    }
+
+    private Optional<Carcase> getCarcase() {
+        List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
+
+        for (Contract contract : contracts) {
+            Optional<Carcase> carcase = takeCarcaseForContract(contract);
+            if (carcase.isPresent()) {
+                return carcase;
+            }
+        }
+
+        return repository.takeOne(EntityMatcher.of(Carcase.class));
+    }
+
+    private Optional<Carcase> takeCarcaseForContract(Contract contract) {
+        EntityMatcher<Carcase> matcher = EntityMatcher.of(Carcase.class)
+                .withFieldEqualTo(Carcase.CASING_FIELD + "." + Casing.COLOR_FIELD, contract.getCasingColor())
+                .withFieldEqualTo(Carcase.CASING_FIELD + "." + Casing.TYPE_FIELD, contract.getCasingType());
+        return repository.takeOne(matcher);
     }
 
     private boolean itCanAssembleDrone() {

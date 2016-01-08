@@ -4,6 +4,8 @@ import com.google.common.base.Preconditions;
 
 public class Carcase extends ProcessedComponent {
 
+    public static final String CASING_FIELD = "casing";
+
     private final Casing casing;
     private final ControlUnit controlUnit;
     private Integer calibrationSum = null;

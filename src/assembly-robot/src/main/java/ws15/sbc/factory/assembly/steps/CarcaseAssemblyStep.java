@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.dto.Carcase;
 import ws15.sbc.factory.common.dto.Casing;
+import ws15.sbc.factory.common.dto.Contract;
 import ws15.sbc.factory.common.dto.ControlUnit;
 import ws15.sbc.factory.common.repository.EntityMatcher;
 import ws15.sbc.factory.common.repository.Repository;
@@ -13,9 +14,8 @@ import ws15.sbc.factory.common.utils.OperationUtils;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.Optional;
-
-import static ws15.sbc.factory.common.dto.Drone.N_REQUIRED_CARCASES;
 
 @Singleton
 public class CarcaseAssemblyStep implements AssemblyStep {
@@ -34,11 +34,6 @@ public class CarcaseAssemblyStep implements AssemblyStep {
     public void performStep() {
         log.info("Performing carcase assembly step");
 
-        if (hasEnoughCarcases()) {
-            log.info("Already have enough carcases");
-            return;
-        }
-
         txManager.beginTransaction();
 
         Optional<Carcase> carcase = assembleNewCarcase();
@@ -55,14 +50,10 @@ public class CarcaseAssemblyStep implements AssemblyStep {
         }
     }
 
-    private boolean hasEnoughCarcases() {
-        return repository.count(EntityMatcher.of(Carcase.class)) >= N_REQUIRED_CARCASES;
-    }
-
     private Optional<Carcase> assembleNewCarcase() {
         log.info("Trying to assemble new carcase");
 
-        Optional<Casing> casing = repository.takeOne(EntityMatcher.of(Casing.class));
+        Optional<Casing> casing = getCasing();
         if (!casing.isPresent()) {
             return Optional.empty();
         }
@@ -75,5 +66,25 @@ public class CarcaseAssemblyStep implements AssemblyStep {
         OperationUtils.simulateDelay(1000);
 
         return Optional.of(new Carcase(robotId, casing.get(), controlUnit.get()));
+    }
+
+    private Optional<Casing> getCasing() {
+        List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
+
+        for (Contract contract : contracts) {
+            Optional<Casing> casing = takeCasingForContract(contract);
+            if (casing.isPresent()) {
+                return casing;
+            }
+        }
+
+        return repository.takeOne(EntityMatcher.of(Casing.class));
+    }
+
+    private Optional<Casing> takeCasingForContract(Contract contract) {
+        EntityMatcher<Casing> matcher = EntityMatcher.of(Casing.class)
+                .withFieldEqualTo(Casing.COLOR_FIELD, contract.getCasingColor())
+                .withFieldEqualTo(Casing.TYPE_FIELD, contract.getCasingType());
+        return repository.takeOne(matcher);
     }
 }
