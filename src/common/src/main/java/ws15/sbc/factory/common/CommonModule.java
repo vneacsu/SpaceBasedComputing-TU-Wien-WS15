@@ -10,6 +10,8 @@ import com.rabbitmq.client.ConnectionFactory;
 import org.mozartspaces.core.Capi;
 import org.mozartspaces.core.DefaultMzsCore;
 import org.mozartspaces.core.MzsCore;
+import org.mozartspaces.core.config.CommonsXmlConfiguration;
+import org.mozartspaces.core.config.Configuration;
 import org.mozartspaces.notifications.NotificationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,13 +56,16 @@ public class CommonModule extends PrivateModule {
     }
 
     private void bindSpaceBased() {
-        MzsCore core = DefaultMzsCore.newInstance();
+        Configuration config = CommonsXmlConfiguration.loadFrom(getClass().getResource("/mozartspaces-client.xml"));
+        MzsCore core = DefaultMzsCore.newInstance(config);
 
         bind(MzsCore.class).toInstance(core);
         bind(Capi.class).toInstance(new Capi(core));
         bind(NotificationManager.class).toInstance(new NotificationManager(core));
 
-        bind(URI.class).toInstance(URI.create("xvsm://localhost:4242"));
+        final int spacePortOffset = Integer.valueOf(PropertyUtils.getProperty("factoryNo").orElse("0"));
+        final int spacePort = SpaceBasedAppManager.SPACE_PORT + spacePortOffset;
+        bind(URI.class).toInstance(URI.create("xvsm://localhost:" + spacePort));
 
         bind(AppManager.class).to(SpaceBasedAppManager.class);
         bind(Repository.class).to(SpaceBasedRepository.class);
