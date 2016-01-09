@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import ws15.sbc.factory.common.dto.*;
 import ws15.sbc.factory.common.repository.EntityMatcher;
 import ws15.sbc.factory.common.repository.Repository;
+import ws15.sbc.factory.common.utils.PropertyUtils;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,6 +34,7 @@ public class XBasedRepository implements Repository {
 
     private final String exchange;
     private final String eventsRoutingKey;
+    private final String factoryPrefix;
 
     private final Channel channel;
     private final XBasedTxManager txManager;
@@ -44,8 +46,11 @@ public class XBasedRepository implements Repository {
 
     @Inject
     public XBasedRepository(Channel channel, XBasedTxManager txManager, HazelcastInstance hazelcastInstance) {
+        String factoryNo = PropertyUtils.getProperty("factoryNo").orElse("0");
+        factoryPrefix = factoryNo + "-";
+
         exchange = "factory-exchange";
-        eventsRoutingKey = "factory-events";
+        eventsRoutingKey = factoryPrefix + "factory-events";
 
         this.channel = channel;
         this.txManager = txManager;
@@ -109,7 +114,7 @@ public class XBasedRepository implements Repository {
     }
 
     private String getQueueNameFor(Class<? extends Serializable> entityClass) {
-        return entityClass.getSimpleName();
+        return factoryPrefix + entityClass.getSimpleName();
     }
 
     private void notifyAction(Serializable entity, Event.ActionType actionType) {
