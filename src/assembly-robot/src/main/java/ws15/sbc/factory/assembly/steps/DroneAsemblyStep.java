@@ -37,9 +37,11 @@ public class DroneAsemblyStep implements AssemblyStep {
     public void performStep() {
         log.info("Performing drone assembly step");
 
+        List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
+
         txManager.beginTransaction();
 
-        acquireComponentsFromInventory();
+        acquireComponentsFromInventory(contracts);
 
         if (itCanAssembleDrone()) {
             assembleDroneAndStoreItInInventory();
@@ -51,14 +53,12 @@ public class DroneAsemblyStep implements AssemblyStep {
 
     }
 
-    private void acquireComponentsFromInventory() {
+    private void acquireComponentsFromInventory(List<Contract> contracts) {
         availableEngineRotorPairs = repository.take(EntityMatcher.of(EngineRotorPair.class), N_REQUIRED_ENGINE_ROTOR_PAIRS);
-        availableCarcase = getCarcase();
+        availableCarcase = getCarcase(contracts);
     }
 
-    private Optional<Carcase> getCarcase() {
-        List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
-
+    private Optional<Carcase> getCarcase(List<Contract> contracts) {
         for (Contract contract : contracts) {
             Optional<Carcase> carcase = takeCarcaseForContract(contract);
             if (carcase.isPresent()) {

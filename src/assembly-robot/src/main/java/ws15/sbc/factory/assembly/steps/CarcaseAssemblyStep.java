@@ -34,9 +34,11 @@ public class CarcaseAssemblyStep implements AssemblyStep {
     public void performStep() {
         log.info("Performing carcase assembly step");
 
+        List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
+
         txManager.beginTransaction();
 
-        Optional<Carcase> carcase = assembleNewCarcase();
+        Optional<Carcase> carcase = assembleNewCarcase(contracts);
 
         if (carcase.isPresent()) {
             log.info("Carcase successfully assembled");
@@ -50,10 +52,10 @@ public class CarcaseAssemblyStep implements AssemblyStep {
         }
     }
 
-    private Optional<Carcase> assembleNewCarcase() {
+    private Optional<Carcase> assembleNewCarcase(List<Contract> contracts) {
         log.info("Trying to assemble new carcase");
 
-        Optional<Casing> casing = getCasing();
+        Optional<Casing> casing = getCasing(contracts);
         if (!casing.isPresent()) {
             return Optional.empty();
         }
@@ -68,9 +70,7 @@ public class CarcaseAssemblyStep implements AssemblyStep {
         return Optional.of(new Carcase(robotId, casing.get(), controlUnit.get()));
     }
 
-    private Optional<Casing> getCasing() {
-        List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
-
+    private Optional<Casing> getCasing(List<Contract> contracts) {
         for (Contract contract : contracts) {
             Optional<Casing> casing = takeCasingForContract(contract);
             if (casing.isPresent()) {

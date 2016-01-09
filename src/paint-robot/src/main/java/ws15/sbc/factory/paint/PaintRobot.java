@@ -38,10 +38,11 @@ public class PaintRobot {
         log.info("Starting paint robot <{}> started work", robotId);
 
         while (keepWorking.get()) {
+            Optional<Contract> firstOpenContract = repository.getFirstOpenContract();
+
             txManager.beginTransaction();
 
             repository.takeOne(GRAY_CASING_MATCHER).ifPresent(casing -> {
-                Optional<Contract> firstOpenContract = repository.getFirstOpenContract();
                 if (firstOpenContract.isPresent()) {
                     Casing.Color requiredColor = firstOpenContract.get().getCasingColor();
                     casing.setColor(requiredColor);
