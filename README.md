@@ -31,6 +31,14 @@ Start a robot that supplies 3 rotors, each at an interval of 1000ms:
 
 `JAVA_OPTS="-DcomponentType=rotor -Dquantity=3 -Dinterval=1000" ./src/supply-robot/build/install/supply-robot/bin/supply-robot`
 
+## Paint-Robot
+
+This robot takes no input parameters.
+
+Start an paint-robot:
+
+`./src/paint-robot/build/install/paint-robot/bin/paint-robot`
+
 ## Assembly-Robot
 
 This robot takes no input parameters.

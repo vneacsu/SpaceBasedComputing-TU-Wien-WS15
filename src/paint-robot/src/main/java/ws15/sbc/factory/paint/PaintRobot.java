@@ -11,11 +11,8 @@ import ws15.sbc.factory.common.utils.OperationUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static ws15.sbc.factory.common.dto.Contract.IS_COMPLETED_FIELD;
 
 public class PaintRobot {
 
@@ -42,17 +39,25 @@ public class PaintRobot {
 
             txManager.beginTransaction();
 
-            repository.takeOne(GRAY_CASING_MATCHER).ifPresent(casing -> {
-                if (firstOpenContract.isPresent()) {
-                    Casing.Color requiredColor = firstOpenContract.get().getCasingColor();
-                    casing.setColor(requiredColor);
-                } else {
-                    casing.setRandomColorNoGray();
-                }
-                OperationUtils.simulateDelay(1000);
+            if (firstOpenContract.isPresent()) {
+                EntityMatcher<Casing> matcher = EntityMatcher.of(Casing.class)
+                        .withFieldEqualTo(Casing.COLOR_FIELD, Casing.Color.GRAY)
+                        .withFieldEqualTo(Casing.TYPE_FIELD, firstOpenContract.get().getCasingType());
 
-                repository.storeEntity(casing);
-            });
+                repository.takeOne(matcher).ifPresent(casing -> {
+                    casing.setColor(firstOpenContract.get().getCasingColor());
+                    OperationUtils.simulateDelay(1000);
+
+                    repository.storeEntity(casing);
+                });
+            } else {
+                repository.takeOne(GRAY_CASING_MATCHER).ifPresent(casing -> {
+                    casing.setRandomColorNoGray();
+                    OperationUtils.simulateDelay(1000);
+
+                    repository.storeEntity(casing);
+                });
+            }
 
             txManager.commit();
         }

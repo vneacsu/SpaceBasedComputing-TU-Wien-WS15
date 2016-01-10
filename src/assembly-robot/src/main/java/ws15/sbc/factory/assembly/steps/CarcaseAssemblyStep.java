@@ -36,9 +36,24 @@ public class CarcaseAssemblyStep implements AssemblyStep {
 
         List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
 
+        if (carcaseAlreadyAvailable(contracts)) {
+            log.info("Carcase already available");
+            return;
+        }
+
+        for (Contract contract : contracts) {
+            if (produceCarcaseForContract(Optional.of(contract))) {
+                return;
+            }
+        }
+
+        produceCarcaseForContract(Optional.empty());
+    }
+
+    private boolean produceCarcaseForContract(Optional<Contract> contract) {
         txManager.beginTransaction();
 
-        Optional<Carcase> carcase = assembleNewCarcase(contracts);
+        Optional<Carcase> carcase = assembleNewCarcase(contract);
 
         if (carcase.isPresent()) {
             log.info("Carcase successfully assembled");
@@ -50,12 +65,28 @@ public class CarcaseAssemblyStep implements AssemblyStep {
 
             txManager.rollback();
         }
+
+        return carcase.isPresent();
     }
 
-    private Optional<Carcase> assembleNewCarcase(List<Contract> contracts) {
+    private boolean carcaseAlreadyAvailable(List<Contract> contracts) {
+        for (Contract contract : contracts) {
+            EntityMatcher<Carcase> matcher = EntityMatcher.of(Carcase.class)
+                    .withFieldEqualTo(Casing.TYPE_FIELD, contract.getCasingType())
+                    .withFieldEqualTo(Casing.COLOR_FIELD, contract.getCasingColor());
+
+            if (repository.count(matcher) > 0) {
+                return true;
+            }
+        }
+
+        return repository.count(EntityMatcher.of(Carcase.class)) > 0;
+    }
+
+    private Optional<Carcase> assembleNewCarcase(Optional<Contract> contract) {
         log.info("Trying to assemble new carcase");
 
-        Optional<Casing> casing = getCasing(contracts);
+        Optional<Casing> casing = getCasing(contract);
         if (!casing.isPresent()) {
             return Optional.empty();
         }
@@ -70,21 +101,17 @@ public class CarcaseAssemblyStep implements AssemblyStep {
         return Optional.of(new Carcase(robotId, casing.get(), controlUnit.get()));
     }
 
-    private Optional<Casing> getCasing(List<Contract> contracts) {
-        for (Contract contract : contracts) {
-            Optional<Casing> casing = takeCasingForContract(contract);
-            if (casing.isPresent()) {
-                return casing;
-            }
+    private Optional<Casing> getCasing(Optional<Contract> contract) {
+        EntityMatcher<Casing> matcher;
+
+        if (contract.isPresent()) {
+            matcher = EntityMatcher.of(Casing.class)
+                    .withFieldEqualTo(Casing.COLOR_FIELD, contract.get().getCasingColor())
+                    .withFieldEqualTo(Casing.TYPE_FIELD, contract.get().getCasingType());
+        } else {
+            matcher = EntityMatcher.of(Casing.class);
         }
 
-        return repository.takeOne(EntityMatcher.of(Casing.class));
-    }
-
-    private Optional<Casing> takeCasingForContract(Contract contract) {
-        EntityMatcher<Casing> matcher = EntityMatcher.of(Casing.class)
-                .withFieldEqualTo(Casing.COLOR_FIELD, contract.getCasingColor())
-                .withFieldEqualTo(Casing.TYPE_FIELD, contract.getCasingType());
         return repository.takeOne(matcher);
     }
 }

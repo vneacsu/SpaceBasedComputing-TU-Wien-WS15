@@ -36,6 +36,11 @@ ASSEMBLY_ROBOT_OPTS="-DrobotId=Assembler_2" \
 pids="$pids $!"
 
 
+ASSEMBLY_ROBOT_OPTS="-DrobotId=Painter_1" \
+./src/paint-robot/build/install/paint-robot/bin/paint-robot > /dev/null &
+pids="$pids $!"
+
+
 CALIBRATE_ROBOT_OPTS="-DrobotId=Calibrator_1" \
 ./src/calibrate-robot/build/install/calibrate-robot/bin/calibrate-robot > /dev/null &
 pids="$pids $!"
@@ -52,7 +57,6 @@ pids="$pids $!"
 LOGISTICS_ROBOT_OPTS="-DrobotId=Logistician_2" \
 ./src/logistics-robot/build/install/logistics-robot/bin/logistics-robot > /dev/null &
 pids="$pids $!"
-
 
 
 SUPPLY_ROBOT_OPTS="-DrobotId=Supplier_1 -DcomponentType=casing -Dquantity=2 -Dinterval=5000" \

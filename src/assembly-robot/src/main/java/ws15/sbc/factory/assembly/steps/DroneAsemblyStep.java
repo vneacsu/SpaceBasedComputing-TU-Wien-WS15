@@ -39,40 +39,49 @@ public class DroneAsemblyStep implements AssemblyStep {
 
         List<Contract> contracts = repository.readAll(EntityMatcher.of(Contract.class));
 
+        for (Contract contract : contracts) {
+            if (produceDroneForContract(Optional.of(contract))) {
+                return;
+            }
+        }
+
+        produceDroneForContract(Optional.empty());
+    }
+
+    private boolean produceDroneForContract(Optional<Contract> contract) {
         txManager.beginTransaction();
 
-        acquireComponentsFromInventory(contracts);
+        acquireComponentsFromInventory(contract);
 
         if (itCanAssembleDrone()) {
             assembleDroneAndStoreItInInventory();
             txManager.commit();
+
+            return true;
         } else {
             log.info("Insufficient resources to assemble a complete drone");
             txManager.rollback();
-        }
 
+            return false;
+        }
     }
 
-    private void acquireComponentsFromInventory(List<Contract> contracts) {
+    private void acquireComponentsFromInventory(Optional<Contract> contract) {
         availableEngineRotorPairs = repository.take(EntityMatcher.of(EngineRotorPair.class), N_REQUIRED_ENGINE_ROTOR_PAIRS);
-        availableCarcase = getCarcase(contracts);
+        availableCarcase = getCarcase(contract);
     }
 
-    private Optional<Carcase> getCarcase(List<Contract> contracts) {
-        for (Contract contract : contracts) {
-            Optional<Carcase> carcase = takeCarcaseForContract(contract);
-            if (carcase.isPresent()) {
-                return carcase;
-            }
+    private Optional<Carcase> getCarcase(Optional<Contract> contract) {
+        EntityMatcher<Carcase> matcher;
+
+        if (contract.isPresent()) {
+            matcher = EntityMatcher.of(Carcase.class)
+                    .withFieldEqualTo(Carcase.CASING_FIELD + "." + Casing.COLOR_FIELD, contract.get().getCasingColor())
+                    .withFieldEqualTo(Carcase.CASING_FIELD + "." + Casing.TYPE_FIELD, contract.get().getCasingType());
+        } else {
+            matcher = EntityMatcher.of(Carcase.class);
         }
 
-        return repository.takeOne(EntityMatcher.of(Carcase.class));
-    }
-
-    private Optional<Carcase> takeCarcaseForContract(Contract contract) {
-        EntityMatcher<Carcase> matcher = EntityMatcher.of(Carcase.class)
-                .withFieldEqualTo(Carcase.CASING_FIELD + "." + Casing.COLOR_FIELD, contract.getCasingColor())
-                .withFieldEqualTo(Carcase.CASING_FIELD + "." + Casing.TYPE_FIELD, contract.getCasingType());
         return repository.takeOne(matcher);
     }
 
